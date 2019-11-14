@@ -57,7 +57,7 @@ public class CustomTextInputLayout
     public static final Locale LOCALE_BR = new Locale("pt", "BR");
 
     private TextInputEditText editText;
-    private AppCompatAutoCompleteTextView customSpinner;
+    private CustomAppCompatAutoCompleteTextView customSpinner;
 
     private boolean isSpinner = false;
 
@@ -157,7 +157,7 @@ public class CustomTextInputLayout
 
     private void initConfig() {
         if (isSpinner) {
-            customSpinner = new AppCompatAutoCompleteTextView(getContext());
+            customSpinner = new CustomAppCompatAutoCompleteTextView(getContext());
             customSpinner.setFocusable(false);
             customSpinner.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
@@ -202,27 +202,6 @@ public class CustomTextInputLayout
                     customSpinner.showDropDown();
                 }
             });
-
-            //disable paste
-            customSpinner.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
-                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    return false;
-                }
-
-                public void onDestroyActionMode(ActionMode mode) {
-                }
-
-                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                    return false;
-                }
-
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    return false;
-                }
-            });
-
-            customSpinner.setLongClickable(false);
-            customSpinner.setTextIsSelectable(false);
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -1041,6 +1020,67 @@ public class CustomTextInputLayout
         c.setTime(data);
 
         return c;
+    }
+
+}
+
+class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
+
+    private final Context context;
+
+    boolean canPaste() {
+        return false;
+    }
+
+    @Override
+    public boolean isSuggestionsEnabled() {
+        return false;
+    }
+
+    public CustomAppCompatAutoCompleteTextView(Context context) {
+        super(context);
+        this.context = context;
+        init();
+    }
+
+    public CustomAppCompatAutoCompleteTextView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        this.context = context;
+        init();
+    }
+
+    public CustomAppCompatAutoCompleteTextView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        this.context = context;
+        init();
+    }
+
+    private void init() {
+        this.setCustomSelectionActionModeCallback(new ActionModeCallbackInterceptor());
+        this.setLongClickable(false);
+    }
+
+    /**
+     * Prevents the action bar (top horizontal bar with cut, copy, paste, etc.) from appearing
+     * by intercepting the callback that would cause it to be created, and returning false.
+     */
+    private class ActionModeCallbackInterceptor implements ActionMode.Callback {
+        private final String TAG = CustomAppCompatAutoCompleteTextView.class.getSimpleName();
+
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        public void onDestroyActionMode(ActionMode mode) {
+        }
     }
 
 }
