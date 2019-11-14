@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -985,6 +987,21 @@ public class CustomTextInputLayout
         if (!isSpinner) {
             editText.setImeOptions(imeOtions);
         }
+    }
+
+    @Override
+    public void addOnEditTextAttachedListener(@NonNull OnEditTextAttachedListener listener) {
+        //super.addOnEditTextAttachedListener(listener);
+    }
+
+    @Override
+    public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
+        if (isSpinner) {
+            customSpinner.requestFocus();
+        } else {
+            editText.requestFocus();
+        }
+        return true;
     }
 
     public static Calendar getCalendar(String date) {
