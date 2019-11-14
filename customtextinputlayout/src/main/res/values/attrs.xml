@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomTextInputLayout">
+        <attr name="setSpinner" format="boolean" />
+        <attr name="android:textSize" />
+        <attr name="android:enabled" />
+        <attr name="android:textAlignment" />
+        <attr name="android:textStyle" />
+        <attr name="textMaxLength" format="integer" />
+        <attr name="isSingleLine" format="boolean" />
+        <attr name="enableSpecialChars" format="boolean" />
+        <attr name="android:inputType" />
+        <attr name="setLines" format="integer" />
+
+        <attr name="maskType" format="integer">
+            <enum name="date" value="1" />
+            <enum name="phone" value="2" />
+            <enum name="brazilDecimal" value="3" />
+            <enum name="brazilMonetary" value="4" />
+            <enum name="brazilCEP" value="5" />
+            <enum name="brazilCNPJ" value="6" />
+            <enum name="brazilCPF" value="7" />
+        </attr>
+
+        <attr name="setDecimalDigits" format="integer" />
+        <attr name="disableClearButton" format="boolean" />
+    </declare-styleable>
+</resources>
