@@ -188,6 +188,12 @@ public class CustomTextInputLayout
                 public void onClick(View v) {
                     ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                             .hideSoftInputFromWindow(getApplicationWindowToken(), 0);
+                }
+            });
+
+            customSpinner.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     customSpinner.showDropDown();
                 }
             });
