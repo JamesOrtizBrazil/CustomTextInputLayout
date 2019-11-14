@@ -203,7 +203,26 @@ public class CustomTextInputLayout
                 }
             });
 
+            //disable paste
+            customSpinner.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                public void onDestroyActionMode(ActionMode mode) {
+                }
+
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    return false;
+                }
+            });
+
             customSpinner.setLongClickable(false);
+            customSpinner.setTextIsSelectable(false);
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
