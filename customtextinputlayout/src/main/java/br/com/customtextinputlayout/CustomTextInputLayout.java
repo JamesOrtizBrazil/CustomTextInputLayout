@@ -1022,6 +1022,12 @@ public class CustomTextInputLayout
         return c;
     }
 
+    public void setInputType(int inputType) {
+        if (!isSpinner) {
+            editText.setInputType(inputType);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
