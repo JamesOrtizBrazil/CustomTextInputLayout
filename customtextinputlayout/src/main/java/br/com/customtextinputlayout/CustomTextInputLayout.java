@@ -1028,6 +1028,12 @@ public class CustomTextInputLayout
         }
     }
 
+    public void setMaxLines(int numLines) {
+        if (!isSpinner) {
+            editText.setMaxLines(numLines);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
