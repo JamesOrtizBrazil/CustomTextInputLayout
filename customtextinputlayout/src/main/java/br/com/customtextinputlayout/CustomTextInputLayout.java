@@ -1034,6 +1034,12 @@ public class CustomTextInputLayout
         }
     }
 
+    public void addTextChangedListener(TextWatcher textWatcher) {
+        if (!isSpinner) {
+            editText.addTextChangedListener(textWatcher);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
