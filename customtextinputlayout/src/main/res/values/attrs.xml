@@ -11,6 +11,7 @@
         <attr name="enableSpecialChars" format="boolean" />
         <attr name="android:inputType" />
         <attr name="setLines" format="integer" />
+        <attr name="maxLines" format="integer" />
 
         <attr name="maskType" format="integer">
             <enum name="date" value="1" />
@@ -20,6 +21,7 @@
             <enum name="brazilCEP" value="5" />
             <enum name="brazilCNPJ" value="6" />
             <enum name="brazilCPF" value="7" />
+            <enum name="integerDotted" value="8" />
         </attr>
 
         <attr name="setDecimalDigits" format="integer" />

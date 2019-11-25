@@ -307,6 +307,10 @@ public class CustomTextInputLayout
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
                     setCustomMask("###.###.###-##");
                     break;
+                case 8:
+                    //integerDotted
+                    decimalDigits = 0;
+                    addBrazilDecimalMask();
                 default:
                     break;
             }
@@ -929,6 +933,7 @@ public class CustomTextInputLayout
             switch (maskType) {
                 case 3:
                 case 4:
+                case 8:
                     //brazilMonetary
                     //brazilDecimal
                     if (editText.getText() == null) {
@@ -1025,12 +1030,6 @@ public class CustomTextInputLayout
     public void setInputType(int inputType) {
         if (!isSpinner) {
             editText.setInputType(inputType);
-        }
-    }
-
-    public void setMaxLines(int numLines) {
-        if (!isSpinner) {
-            editText.setMaxLines(numLines);
         }
     }
 
