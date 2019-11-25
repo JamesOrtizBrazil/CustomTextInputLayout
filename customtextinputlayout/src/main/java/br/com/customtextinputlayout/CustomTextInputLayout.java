@@ -310,6 +310,7 @@ public class CustomTextInputLayout
                 case 8:
                     //integerDotted
                     decimalDigits = 0;
+                    divisor = 1;
                     addBrazilDecimalMask();
                 default:
                     break;
