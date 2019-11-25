@@ -1040,6 +1040,12 @@ public class CustomTextInputLayout
         }
     }
 
+    public void setSelection(int selection) {
+        if (!isSpinner) {
+            editText.setSelection(selection);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
