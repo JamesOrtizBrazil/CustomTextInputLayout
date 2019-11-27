@@ -865,6 +865,7 @@ public class CustomTextInputLayout
 
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
         datePickerDialog.show();
     }
 
