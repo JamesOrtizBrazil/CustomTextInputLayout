@@ -1046,6 +1046,12 @@ public class CustomTextInputLayout
         }
     }
 
+    public void setOnKeyListener(OnKeyListener onKeyListener) {
+        if (!isSpinner) {
+            editText.setOnKeyListener(onKeyListener);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
