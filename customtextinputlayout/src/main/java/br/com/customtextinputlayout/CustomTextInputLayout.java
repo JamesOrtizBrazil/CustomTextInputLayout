@@ -85,6 +85,8 @@ public class CustomTextInputLayout
 
     private View.OnFocusChangeListener mOnFocusChangeListener;
 
+    private DatePickerDialog datePickerDialog;
+
     public CustomTextInputLayout(Context context) {
         super(context);
 
@@ -834,7 +836,7 @@ public class CustomTextInputLayout
         int mMonth = c.get(Calendar.MONTH);
         int mDay = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dpd = new DatePickerDialog(getContext(),
+        datePickerDialog = new DatePickerDialog(getContext(),
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -863,7 +865,7 @@ public class CustomTextInputLayout
 
                     }
                 }, mYear, mMonth, mDay);
-        dpd.show();
+        datePickerDialog.show();
     }
 
     @Override
@@ -1049,6 +1051,22 @@ public class CustomTextInputLayout
     public void setOnKeyListener(OnKeyListener onKeyListener) {
         if (!isSpinner) {
             editText.setOnKeyListener(onKeyListener);
+        }
+    }
+
+    public void setMaxDate(Date date) {
+        if (!isSpinner) {
+            if (datePickerDialog != null) {
+                datePickerDialog.getDatePicker().setMaxDate(date.getTime());
+            }
+        }
+    }
+
+    public void setMinDate(Date date) {
+        if (!isSpinner) {
+            if (datePickerDialog != null) {
+                datePickerDialog.getDatePicker().setMinDate(date.getTime());
+            }
         }
     }
 
