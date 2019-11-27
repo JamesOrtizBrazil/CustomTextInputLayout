@@ -86,6 +86,8 @@ public class CustomTextInputLayout
     private View.OnFocusChangeListener mOnFocusChangeListener;
 
     private DatePickerDialog datePickerDialog;
+    private Date maxDate;
+    private Date minDate;
 
     public CustomTextInputLayout(Context context) {
         super(context);
@@ -865,7 +867,12 @@ public class CustomTextInputLayout
 
                     }
                 }, mYear, mMonth, mDay);
-        datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
+        if (maxDate != null) {
+            datePickerDialog.getDatePicker().setMaxDate(maxDate.getTime());
+        }
+        if (minDate != null) {
+            datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
+        }
         datePickerDialog.show();
     }
 
@@ -1056,19 +1063,11 @@ public class CustomTextInputLayout
     }
 
     public void setMaxDate(Date date) {
-        if (!isSpinner) {
-            if (datePickerDialog != null) {
-                datePickerDialog.getDatePicker().setMaxDate(date.getTime());
-            }
-        }
+        maxDate = date;
     }
 
     public void setMinDate(Date date) {
-        if (!isSpinner) {
-            if (datePickerDialog != null) {
-                datePickerDialog.getDatePicker().setMinDate(date.getTime());
-            }
-        }
+        minDate = date;
     }
 
 }
