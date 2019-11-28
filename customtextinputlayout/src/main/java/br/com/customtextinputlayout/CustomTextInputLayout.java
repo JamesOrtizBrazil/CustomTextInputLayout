@@ -867,16 +867,6 @@ public class CustomTextInputLayout
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
 
-        Calendar startDate = Calendar.getInstance();
-        startDate.set(Calendar.YEAR, 1900);
-        startDate.set(Calendar.DAY_OF_MONTH, 1);
-        startDate.set(Calendar.MONTH, Calendar.JANUARY);
-
-        Calendar endDate = Calendar.getInstance();
-        endDate.set(Calendar.YEAR, 2100);
-        endDate.set(Calendar.DAY_OF_MONTH, 1);
-        endDate.set(Calendar.MONTH, Calendar.JANUARY);
-
         com.wdullaer.materialdatetimepicker.date.DatePickerDialog datePickerDialog =
                 com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> {
             calendar = Calendar.getInstance();
@@ -884,22 +874,35 @@ public class CustomTextInputLayout
             String dateString = format.format(calendar.getTime());
             editText.setText(dateString);
         });
-        datePickerDialog.setThemeDark(false);
-        datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");//todo passar o fragment manager ao inves da activity
+        datePickerDialog.setThemeDark(true);
 
+        Calendar startDate = Calendar.getInstance();
         if (minDate != null) {
             startDate.set(Calendar.YEAR, minDate.getYear());
             startDate.set(Calendar.DAY_OF_MONTH, minDate.getDate());
             startDate.set(Calendar.MONTH, minDate.getMonth());
+        } else {
+            startDate.set(Calendar.YEAR, 1900);
+            startDate.set(Calendar.DAY_OF_MONTH, 1);
+            startDate.set(Calendar.MONTH, Calendar.JANUARY);
         }
         datePickerDialog.setMinDate(startDate);
 
+        Calendar endDate = Calendar.getInstance();
         if (maxDate != null) {
             endDate.set(Calendar.YEAR, maxDate.getYear());
             endDate.set(Calendar.DAY_OF_MONTH, maxDate.getDate());
             endDate.set(Calendar.MONTH, maxDate.getMonth());
+        } else {
+            endDate.set(Calendar.YEAR, 2100);
+            endDate.set(Calendar.DAY_OF_MONTH, 1);
+            endDate.set(Calendar.MONTH, Calendar.JANUARY);
         }
         datePickerDialog.setMaxDate(endDate);
+
+        datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");//todo passar o fragment manager ao inves da activity
+
+
 
         if (!weekends) {
             //datePickerDialog.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
