@@ -1,6 +1,7 @@
 package br.com.customtextinputlayout;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -15,7 +16,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
@@ -85,7 +85,7 @@ public class CustomTextInputLayout
 
     private View.OnFocusChangeListener mOnFocusChangeListener;
 
-    private DatePickerDialog datePickerDialog;
+    private Calendar calendar;
     private Date maxDate;
     private Date minDate;
 
@@ -185,27 +185,14 @@ public class CustomTextInputLayout
             customSpinner.setEnabled(enabled);
 
             if (customSpinner.getAdapter() == null) {
-                customSpinner.setOnFocusChangeListener(new OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                    }
+                customSpinner.setOnFocusChangeListener((v, hasFocus) -> {
                 });
             }
 
-            customSpinner.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(getApplicationWindowToken(), 0);
-                }
-            });
+            customSpinner.setOnClickListener(v -> ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(getApplicationWindowToken(), 0));
 
-            customSpinner.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    customSpinner.showDropDown();
-                }
-            });
+            customSpinner.setOnClickListener(v -> customSpinner.showDropDown());
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -276,12 +263,7 @@ public class CustomTextInputLayout
 
                     editText.setFocusable(false);
 
-                    editText.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            callDialogDate();
-                        }
-                    });
+                    editText.setOnClickListener(v -> callDialogDate());
 
                     break;
                 case 2:
@@ -317,6 +299,19 @@ public class CustomTextInputLayout
                     divisor = 1;
                     addBrazilDecimalMask();
                     break;
+                case 9:
+                    //test new datepicker
+                    startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
+                    startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
+
+                    if (Build.VERSION.SDK_INT >= 17) {
+                        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
+                    }
+
+                    editText.setFocusable(false);
+
+                    final Activity activity = (Activity) editText.getContext();
+                    editText.setOnClickListener(v -> setDatePicker(activity));
                 default:
                     break;
             }
@@ -483,19 +478,16 @@ public class CustomTextInputLayout
         };
         editText.addTextChangedListener(monetaryWatcher);
 
-        editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (mOnFocusChangeListener != null) {
-                    mOnFocusChangeListener.onFocusChange(v, hasFocus);
-                }
-                if (!hasFocus) {
-                    if (getMaskedText().equals("")) {
-                        try {
-                            setInitialBrazilDecimal();
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (mOnFocusChangeListener != null) {
+                mOnFocusChangeListener.onFocusChange(v, hasFocus);
+            }
+            if (!hasFocus) {
+                if (getMaskedText().equals("")) {
+                    try {
+                        setInitialBrazilDecimal();
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -562,19 +554,16 @@ public class CustomTextInputLayout
         };
         editText.addTextChangedListener(monetaryWatcher);
 
-        editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (mOnFocusChangeListener != null) {
-                    mOnFocusChangeListener.onFocusChange(v, hasFocus);
-                }
-                if (!hasFocus) {
-                    if (getMaskedText().equals("")) {
-                        try {
-                            setInitialBrazilMonetary();
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (mOnFocusChangeListener != null) {
+                mOnFocusChangeListener.onFocusChange(v, hasFocus);
+            }
+            if (!hasFocus) {
+                if (getMaskedText().equals("")) {
+                    try {
+                        setInitialBrazilMonetary();
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -786,38 +775,35 @@ public class CustomTextInputLayout
         InputFilter[] editFilters = editText.getFilters();
         InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
         System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
-        newFilters[editFilters.length] = new InputFilter() {
-            @Override
-            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                String chars = "`*~^´";
+        newFilters[editFilters.length] = (source, start, end, dest, dstart, dend) -> {
+            String chars = "`*~^´";
 
-                if (source instanceof SpannableStringBuilder) {
-                    SpannableStringBuilder sourceAsSpannableBuilder = (SpannableStringBuilder) source;
-                    for (int i = end - 1; i >= start; i--) {
-                        char currentChar = source.charAt(i);
-                        if (!Character.isLetterOrDigit(currentChar) && !Character.isSpaceChar(currentChar)) {
-                            if (!chars.contains(String.valueOf(currentChar))) {
-                                sourceAsSpannableBuilder.delete(i, i + 1);
-                            }
+            if (source instanceof SpannableStringBuilder) {
+                SpannableStringBuilder sourceAsSpannableBuilder = (SpannableStringBuilder) source;
+                for (int i = end - 1; i >= start; i--) {
+                    char currentChar = source.charAt(i);
+                    if (!Character.isLetterOrDigit(currentChar) && !Character.isSpaceChar(currentChar)) {
+                        if (!chars.contains(String.valueOf(currentChar))) {
+                            sourceAsSpannableBuilder.delete(i, i + 1);
                         }
                     }
-                    return Normalizer.normalize(source, Normalizer.Form.NFD)
-                            .replaceAll("[^\\p{ASCII}]", "");
-                } else {
-                    StringBuilder filteredStringBuilder = new StringBuilder();
-                    for (int i = start; i < end; i++) {
-                        char currentChar = source.charAt(i);
-                        if (Character.isLetterOrDigit(currentChar) || Character.isSpaceChar(currentChar)) {
-                            filteredStringBuilder.append(currentChar);
-                        } else {
-                            if (!chars.contains(String.valueOf(currentChar))) {
-                                filteredStringBuilder.append(currentChar);
-                            }
-                        }
-                    }
-                    return Normalizer.normalize(filteredStringBuilder.toString(), Normalizer.Form.NFD)
-                            .replaceAll("[^\\p{ASCII}]", "");
                 }
+                return Normalizer.normalize(source, Normalizer.Form.NFD)
+                        .replaceAll("[^\\p{ASCII}]", "");
+            } else {
+                StringBuilder filteredStringBuilder = new StringBuilder();
+                for (int i = start; i < end; i++) {
+                    char currentChar = source.charAt(i);
+                    if (Character.isLetterOrDigit(currentChar) || Character.isSpaceChar(currentChar)) {
+                        filteredStringBuilder.append(currentChar);
+                    } else {
+                        if (!chars.contains(String.valueOf(currentChar))) {
+                            filteredStringBuilder.append(currentChar);
+                        }
+                    }
+                }
+                return Normalizer.normalize(filteredStringBuilder.toString(), Normalizer.Form.NFD)
+                        .replaceAll("[^\\p{ASCII}]", "");
             }
         };
 
@@ -839,34 +825,31 @@ public class CustomTextInputLayout
         int mMonth = c.get(Calendar.MONTH);
         int mDay = c.get(Calendar.DAY_OF_MONTH);
 
-        datePickerDialog = new DatePickerDialog(getContext(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        String mes;
-                        String dia;
-                        monthOfYear = monthOfYear + 1;
-                        if (dayOfMonth < 10) {
-                            dia = 0 + String.valueOf(dayOfMonth);
-                        } else {
-                            dia = String.valueOf(dayOfMonth);
-                        }
-                        if (monthOfYear < 10) {
-                            mes = 0 + String.valueOf(monthOfYear);
-                        } else {
-                            mes = String.valueOf(monthOfYear);
-                        }
-                        String dataInicial = dia + "/" + mes + "/" + year;
-                        editText.setText(dataInicial);
-                        editText.setError(null);
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                editText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-                            }
-                        }, 200);
-
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    String mes;
+                    String dia;
+                    monthOfYear = monthOfYear + 1;
+                    if (dayOfMonth < 10) {
+                        dia = 0 + String.valueOf(dayOfMonth);
+                    } else {
+                        dia = String.valueOf(dayOfMonth);
                     }
+                    if (monthOfYear < 10) {
+                        mes = 0 + String.valueOf(monthOfYear);
+                    } else {
+                        mes = String.valueOf(monthOfYear);
+                    }
+                    String dataInicial = dia + "/" + mes + "/" + year;
+                    editText.setText(dataInicial);
+                    editText.setError(null);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            editText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+                        }
+                    }, 200);
+
                 }, mYear, mMonth, mDay);
         if (maxDate != null) {
             datePickerDialog.getDatePicker().setMaxDate(maxDate.getTime());
@@ -875,6 +858,58 @@ public class CustomTextInputLayout
             datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
         }
         datePickerDialog.show();
+    }
+
+    public void setDatePicker(Activity activity/*,
+                              Date minDate,
+                              Date maxDate,
+                              boolean weekends*/) {
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
+
+        Calendar startDate = Calendar.getInstance();
+        startDate.set(Calendar.YEAR, 1900);
+        startDate.set(Calendar.DAY_OF_MONTH, 1);
+        startDate.set(Calendar.MONTH, Calendar.JANUARY);
+
+        Calendar endDate = Calendar.getInstance();
+        endDate.set(Calendar.YEAR, 2100);
+        endDate.set(Calendar.DAY_OF_MONTH, 1);
+        endDate.set(Calendar.MONTH, Calendar.JANUARY);
+
+        com.wdullaer.materialdatetimepicker.date.DatePickerDialog datePickerDialog =
+                com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> {
+            calendar = Calendar.getInstance();
+            calendar.set(year, (monthOfYear), dayOfMonth);
+            String dateString = format.format(calendar.getTime());
+            editText.setText(dateString);
+        });
+        datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");
+
+        if (minDate != null) {
+            startDate.set(Calendar.YEAR, minDate.getYear());
+            startDate.set(Calendar.DAY_OF_MONTH, minDate.getDate());
+            startDate.set(Calendar.MONTH, minDate.getMonth());
+        }
+        datePickerDialog.setMinDate(startDate);
+
+        if (maxDate != null) {
+            endDate.set(Calendar.YEAR, maxDate.getYear());
+            endDate.set(Calendar.DAY_OF_MONTH, maxDate.getDate());
+            endDate.set(Calendar.MONTH, maxDate.getMonth());
+        }
+        datePickerDialog.setMaxDate(endDate);
+
+       /* if (!weekends) {
+            //datePickerDialog.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
+            for (Calendar loopdate = startDate; startDate.before(endDate); startDate.add(Calendar.DATE, 1), loopdate = startDate) {
+                int dayOfWeek = loopdate.get(Calendar.DAY_OF_WEEK);
+                if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
+                    Calendar[] disabledDays =  new Calendar[1];
+                    disabledDays[0] = loopdate;
+                    datePickerDialog.setDisabledDays(disabledDays);
+                }
+            }
+        }*/
     }
 
     @Override
