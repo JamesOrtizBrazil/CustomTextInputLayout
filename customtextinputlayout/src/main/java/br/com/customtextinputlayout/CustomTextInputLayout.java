@@ -888,10 +888,12 @@ public class CustomTextInputLayout
                 setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
             }
         } else {
-            editText.setEnabled(enabled);
+            if (editText != null) {
+                editText.setEnabled(enabled);
 
-            if (!enabled) {
-                setEndIconMode(END_ICON_NONE);
+                if (!enabled) {
+                    setEndIconMode(END_ICON_NONE);
+                }
             }
         }
     }
