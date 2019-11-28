@@ -22,7 +22,6 @@
             <enum name="brazilCNPJ" value="6" />
             <enum name="brazilCPF" value="7" />
             <enum name="integerDotted" value="8" />
-            <enum name="datepicker" value="9" />
         </attr>
 
         <attr name="setDecimalDigits" format="integer" />

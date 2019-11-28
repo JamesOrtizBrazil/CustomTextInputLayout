@@ -299,19 +299,6 @@ public class CustomTextInputLayout
                     divisor = 1;
                     addBrazilDecimalMask();
                     break;
-                case 9:
-                    //test new datepicker
-                    startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
-                    startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
-
-                    if (Build.VERSION.SDK_INT >= 17) {
-                        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
-                    }
-
-                    editText.setFocusable(false);
-
-                    final Activity activity = (Activity) editText.getContext();
-                    editText.setOnClickListener(v -> setDatePicker(activity));
                 default:
                     break;
             }
@@ -864,6 +851,17 @@ public class CustomTextInputLayout
                               Date minDate,
                               Date maxDate,
                               boolean weekends*/) {
+        Drawable startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
+        startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
+
+        if (Build.VERSION.SDK_INT >= 17) {
+            editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
+        }
+
+        editText.setFocusable(false); //todo ver como fazer para tirar a mascara
+
+        editText.setOnClickListener(v -> setDatePicker(activity));
+
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
 
         Calendar startDate = Calendar.getInstance();
