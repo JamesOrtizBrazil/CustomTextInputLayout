@@ -19,6 +19,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -851,70 +852,66 @@ public class CustomTextInputLayout
                               Date minDate,
                               Date maxDate,
                               boolean weekends) {
-        Drawable startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
-        startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
+        editText.setOnClickListener(v -> {
+            Drawable startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
+            startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
 
-        if (Build.VERSION.SDK_INT >= 17) {
-            editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
-        }
+            if (Build.VERSION.SDK_INT >= 17) {
+                editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
+            }
 
-        editText.setFocusable(false); //todo ver como fazer para tirar a mascara
+            editText.setFocusable(false); //todo ver como fazer para tirar a mascara
 
-        editText.setOnClickListener(v -> setDatePicker(activity,
-                minDate,
-                maxDate,
-                weekends));
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
 
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
+            com.wdullaer.materialdatetimepicker.date.DatePickerDialog datePickerDialog =
+                    com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> {
+                        calendar = Calendar.getInstance();
+                        calendar.set(year, (monthOfYear), dayOfMonth);
+                        String dateString = format.format(calendar.getTime());
+                        editText.setText(dateString);
+                    });
 
-        com.wdullaer.materialdatetimepicker.date.DatePickerDialog datePickerDialog =
-                com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> {
-            calendar = Calendar.getInstance();
-            calendar.set(year, (monthOfYear), dayOfMonth);
-            String dateString = format.format(calendar.getTime());
-            editText.setText(dateString);
-        });
-        datePickerDialog.setThemeDark(true);
+            Calendar startDate = Calendar.getInstance();
+            if (minDate != null) {
+                startDate.set(Calendar.YEAR, minDate.getYear());
+                startDate.set(Calendar.DAY_OF_MONTH, minDate.getDate());
+                startDate.set(Calendar.MONTH, minDate.getMonth());
+            } else {
+                startDate.set(Calendar.YEAR, 1900);
+                startDate.set(Calendar.DAY_OF_MONTH, 1);
+                startDate.set(Calendar.MONTH, Calendar.JANUARY);
+            }
+            datePickerDialog.setMinDate(startDate);
 
-        Calendar startDate = Calendar.getInstance();
-        if (minDate != null) {
-            startDate.set(Calendar.YEAR, minDate.getYear());
-            startDate.set(Calendar.DAY_OF_MONTH, minDate.getDate());
-            startDate.set(Calendar.MONTH, minDate.getMonth());
-        } else {
-            startDate.set(Calendar.YEAR, 1900);
-            startDate.set(Calendar.DAY_OF_MONTH, 1);
-            startDate.set(Calendar.MONTH, Calendar.JANUARY);
-        }
-        datePickerDialog.setMinDate(startDate);
+            Log.i("CustonTextInputLayout", "start date = " + startDate.toString());
 
-        Calendar endDate = Calendar.getInstance();
-        if (maxDate != null) {
-            endDate.set(Calendar.YEAR, maxDate.getYear());
-            endDate.set(Calendar.DAY_OF_MONTH, maxDate.getDate());
-            endDate.set(Calendar.MONTH, maxDate.getMonth());
-        } else {
-            endDate.set(Calendar.YEAR, 2100);
-            endDate.set(Calendar.DAY_OF_MONTH, 1);
-            endDate.set(Calendar.MONTH, Calendar.JANUARY);
-        }
-        datePickerDialog.setMaxDate(endDate);
+            Calendar endDate = Calendar.getInstance();
+            if (maxDate != null) {
+                endDate.set(Calendar.YEAR, maxDate.getYear());
+                endDate.set(Calendar.DAY_OF_MONTH, maxDate.getDate());
+                endDate.set(Calendar.MONTH, maxDate.getMonth());
+            } else {
+                endDate.set(Calendar.YEAR, 2100);
+                endDate.set(Calendar.DAY_OF_MONTH, 1);
+                endDate.set(Calendar.MONTH, Calendar.JANUARY);
+            }
+            datePickerDialog.setMaxDate(endDate);
 
-        datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");//todo passar o fragment manager ao inves da activity
-
-
-
-        if (!weekends) {
-            //datePickerDialog.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
-            for (Calendar loopdate = startDate; startDate.before(endDate); startDate.add(Calendar.DATE, 1), loopdate = startDate) {
-                int dayOfWeek = loopdate.get(Calendar.DAY_OF_WEEK);
-                if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
-                    Calendar[] disabledDays =  new Calendar[1];
-                    disabledDays[0] = loopdate;
-                    datePickerDialog.setDisabledDays(disabledDays);
+            if (!weekends) {
+                //datePickerDialog.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
+                for (Calendar loopdate = startDate; startDate.before(endDate); startDate.add(Calendar.DATE, 1), loopdate = startDate) {
+                    int dayOfWeek = loopdate.get(Calendar.DAY_OF_WEEK);
+                    if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
+                        Calendar[] disabledDays =  new Calendar[1];
+                        disabledDays[0] = loopdate;
+                        datePickerDialog.setDisabledDays(disabledDays);
+                    }
                 }
             }
-        }
+
+            datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");//todo passar o fragment manager ao inves da activity
+        });
     }
 
     @Override
