@@ -847,10 +847,10 @@ public class CustomTextInputLayout
         datePickerDialog.show();
     }
 
-    public void setDatePicker(Activity activity/*,
+    public void setDatePicker(Activity activity,
                               Date minDate,
                               Date maxDate,
-                              boolean weekends*/) {
+                              boolean weekends) {
         Drawable startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
         startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
 
@@ -860,7 +860,10 @@ public class CustomTextInputLayout
 
         editText.setFocusable(false); //todo ver como fazer para tirar a mascara
 
-        editText.setOnClickListener(v -> setDatePicker(activity));
+        editText.setOnClickListener(v -> setDatePicker(activity,
+                minDate,
+                maxDate,
+                weekends));
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
 
@@ -881,7 +884,8 @@ public class CustomTextInputLayout
             String dateString = format.format(calendar.getTime());
             editText.setText(dateString);
         });
-        datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");
+        datePickerDialog.setThemeDark(false);
+        datePickerDialog.show(activity.getFragmentManager(), "Datepickerdialog");//todo passar o fragment manager ao inves da activity
 
         if (minDate != null) {
             startDate.set(Calendar.YEAR, minDate.getYear());
@@ -897,7 +901,7 @@ public class CustomTextInputLayout
         }
         datePickerDialog.setMaxDate(endDate);
 
-       /* if (!weekends) {
+        if (!weekends) {
             //datePickerDialog.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
             for (Calendar loopdate = startDate; startDate.before(endDate); startDate.add(Calendar.DATE, 1), loopdate = startDate) {
                 int dayOfWeek = loopdate.get(Calendar.DAY_OF_WEEK);
@@ -907,7 +911,7 @@ public class CustomTextInputLayout
                     datePickerDialog.setDisabledDays(disabledDays);
                 }
             }
-        }*/
+        }
     }
 
     @Override
