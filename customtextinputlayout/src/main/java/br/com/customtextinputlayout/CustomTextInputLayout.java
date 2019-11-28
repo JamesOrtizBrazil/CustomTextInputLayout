@@ -316,6 +316,7 @@ public class CustomTextInputLayout
                     decimalDigits = 0;
                     divisor = 1;
                     addBrazilDecimalMask();
+                    break;
                 default:
                     break;
             }
