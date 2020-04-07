@@ -1042,7 +1042,7 @@ public class CustomTextInputLayout
         minDate = date;
     }
 
-    private void setStyleForEdittext(int color) {
+    public void setStyleForEdittext(int color) {
         Drawable wrappedDrawable = DrawableCompat.wrap(editText.getBackground());
         DrawableCompat.setTint(wrappedDrawable, color);
         editText.setBackgroundDrawable(wrappedDrawable);
