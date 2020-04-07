@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
-import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -61,6 +60,7 @@ public class CustomTextInputLayout
     private boolean isSpinner = false;
 
     private float textSize;
+    private int textColor;
     private boolean enabled = true;
     private int textAlignment;
     private int textStyle;
@@ -119,6 +119,8 @@ public class CustomTextInputLayout
                 isSpinner = a.getBoolean(attr, false);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
                 textSize = a.getDimension(attr, 0);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
+                textColor = a.getInt(attr, -1);
             } else if (attr == R.styleable.CustomTextInputLayout_android_enabled) {
                 enabled = a.getBoolean(attr, true);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textAlignment) {
@@ -177,6 +179,11 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
+
+            if (textColor >= 0) {
+                customSpinner.setTextColor(textColor);
+            }
+
             customSpinner.requestLayout();
 
             customSpinner.setSingleLine();
@@ -235,6 +242,11 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
+
+            if (textColor >= 0) {
+                editText.setTextColor(textColor);
+            }
+
             editText.requestLayout();
 
             if (decimalDigits != 2) {
@@ -829,12 +841,8 @@ public class CustomTextInputLayout
                     String dataInicial = dia + "/" + mes + "/" + year;
                     editText.setText(dataInicial);
                     editText.setError(null);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            editText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-                        }
-                    }, 200);
+                    new Handler().postDelayed(() ->
+                            editText.setImeOptions(EditorInfo.IME_ACTION_NEXT), 200);
 
                 }, mYear, mMonth, mDay);
         if (maxDate != null) {
@@ -1041,7 +1049,7 @@ public class CustomTextInputLayout
     public void setMinDate(Date date) {
         minDate = date;
     }
-    
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
