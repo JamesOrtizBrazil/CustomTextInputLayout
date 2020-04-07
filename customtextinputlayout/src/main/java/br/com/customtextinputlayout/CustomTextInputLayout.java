@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -1039,6 +1040,12 @@ public class CustomTextInputLayout
 
     public void setMinDate(Date date) {
         minDate = date;
+    }
+
+    private void setStyleForEdittext(int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(editText.getBackground());
+        DrawableCompat.setTint(wrappedDrawable, color);
+        editText.setBackgroundDrawable(wrappedDrawable);
     }
 
 }

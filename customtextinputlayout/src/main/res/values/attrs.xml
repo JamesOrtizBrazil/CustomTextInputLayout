@@ -26,5 +26,7 @@
 
         <attr name="setDecimalDigits" format="integer" />
         <attr name="disableClearButton" format="boolean" />
+
+
     </declare-styleable>
 </resources>
