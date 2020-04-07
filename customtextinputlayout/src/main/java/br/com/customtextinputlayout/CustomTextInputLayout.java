@@ -1041,12 +1041,7 @@ public class CustomTextInputLayout
     public void setMinDate(Date date) {
         minDate = date;
     }
-
-    public void setStyleForEdittext(int color) {
-        ColorStateList colorStateList = ColorStateList.valueOf(color);
-        ViewCompat.setBackgroundTintList(editText, colorStateList);
-    }
-
+    
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
