@@ -1043,9 +1043,8 @@ public class CustomTextInputLayout
     }
 
     public void setStyleForEdittext(int color) {
-        Drawable wrappedDrawable = DrawableCompat.wrap(editText.getBackground());
-        DrawableCompat.setTint(wrappedDrawable, color);
-        editText.setBackgroundDrawable(wrappedDrawable);
+        ColorStateList colorStateList = ColorStateList.valueOf(color);
+        editText.setSupportBackgroundTintList(colorStateList);
     }
 
 }
