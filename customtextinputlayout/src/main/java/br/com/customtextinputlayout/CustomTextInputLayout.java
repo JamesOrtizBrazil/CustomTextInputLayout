@@ -60,7 +60,6 @@ public class CustomTextInputLayout
     private boolean isSpinner = false;
 
     private float textSize;
-    private int textColor;
     private boolean enabled = true;
     private int textAlignment;
     private int textStyle;
@@ -118,8 +117,6 @@ public class CustomTextInputLayout
                 isSpinner = a.getBoolean(attr, false);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
                 textSize = a.getDimension(attr, 0);
-            } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
-                textColor = a.getResourceId(attr, -1);
             } else if (attr == R.styleable.CustomTextInputLayout_android_enabled) {
                 enabled = a.getBoolean(attr, true);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textAlignment) {
@@ -178,11 +175,6 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
-
-            if (textColor >= 0) {
-                customSpinner.setTextColor(textColor);
-            }
-
             customSpinner.requestLayout();
 
             customSpinner.setSingleLine();
@@ -241,11 +233,6 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
-
-            if (textColor >= 0) {
-                editText.setTextColor(textColor);
-            }
-
             editText.requestLayout();
 
             if (decimalDigits != 2) {
