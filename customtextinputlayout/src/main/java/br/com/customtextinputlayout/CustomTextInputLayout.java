@@ -84,7 +84,6 @@ public class CustomTextInputLayout
 
     private View.OnFocusChangeListener mOnFocusChangeListener;
 
-    private Calendar calendar;
     private Date maxDate;
     private Date minDate;
 
@@ -120,7 +119,7 @@ public class CustomTextInputLayout
             } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
                 textSize = a.getDimension(attr, 0);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
-                textColor = a.getInt(attr, -1);
+                textColor = a.getResourceId(attr, -1);
             } else if (attr == R.styleable.CustomTextInputLayout_android_enabled) {
                 enabled = a.getBoolean(attr, true);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textAlignment) {
