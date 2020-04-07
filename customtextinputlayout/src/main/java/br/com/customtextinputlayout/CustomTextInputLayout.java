@@ -34,7 +34,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
-import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -1044,7 +1044,7 @@ public class CustomTextInputLayout
 
     public void setStyleForEdittext(int color) {
         ColorStateList colorStateList = ColorStateList.valueOf(color);
-        editText.setSupportBackgroundTintList(colorStateList);
+        ViewCompat.setBackgroundTintList(editText, colorStateList);
     }
 
 }
