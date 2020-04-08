@@ -20,6 +20,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,7 +149,7 @@ public class CustomTextInputLayout
             } else if (attr == R.styleable.CustomTextInputLayout_disableClearButton) {
                 disableClearButton = a.getBoolean(attr, false);
             } else if (attr == R.styleable.CustomTextInputLayout_textGravity) {
-                textGravity = a.getInt(attr, -1);
+                textGravity = a.getInt(attr, Gravity.NO_GRAVITY);
             }
         }
 
@@ -197,9 +198,7 @@ public class CustomTextInputLayout
 
             customSpinner.setOnClickListener(v -> customSpinner.showDropDown());
 
-            if (textGravity > 0) {
-                customSpinner.setGravity(textGravity);
-            }
+            customSpinner.setGravity(textGravity);
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -331,9 +330,7 @@ public class CustomTextInputLayout
                 setEndIconTintMode(PorterDuff.Mode.SRC_IN);
             }
 
-            if (textGravity > 0) {
-                editText.setGravity(textGravity);
-            }
+            editText.setGravity(textGravity);
         }
 
         if (textColor != null) {
