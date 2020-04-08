@@ -27,6 +27,7 @@
 
         <attr name="setDecimalDigits" format="integer" />
         <attr name="disableClearButton" format="boolean" />
+        <attr name="textGravity" format="integer" />
 
     </declare-styleable>
 </resources>

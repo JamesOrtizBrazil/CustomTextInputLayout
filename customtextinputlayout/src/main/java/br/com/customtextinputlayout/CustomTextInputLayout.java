@@ -71,6 +71,7 @@ public class CustomTextInputLayout
     private Drawable endIconDrawable = null;
     private int endIconTint = -1;
     private int lines = 0;
+    private int textGravity = 0;
 
     private int maskType = 0;
 
@@ -146,6 +147,8 @@ public class CustomTextInputLayout
                 decimalDigits = a.getInt(attr, 2);
             } else if (attr == R.styleable.CustomTextInputLayout_disableClearButton) {
                 disableClearButton = a.getBoolean(attr, false);
+            } else if (attr == R.styleable.CustomTextInputLayout_textGravity) {
+                textGravity = a.getInt(attr, -1);
             }
         }
 
@@ -193,6 +196,10 @@ public class CustomTextInputLayout
                     .hideSoftInputFromWindow(getApplicationWindowToken(), 0));
 
             customSpinner.setOnClickListener(v -> customSpinner.showDropDown());
+
+            if (textGravity > 0) {
+                customSpinner.setGravity(textGravity);
+            }
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -322,6 +329,10 @@ public class CustomTextInputLayout
             if (endIconTint != -1) {
                 setEndIconTintList(ColorStateList.valueOf(endIconTint));
                 setEndIconTintMode(PorterDuff.Mode.SRC_IN);
+            }
+
+            if (textGravity > 0) {
+                editText.setGravity(textGravity);
             }
         }
 
