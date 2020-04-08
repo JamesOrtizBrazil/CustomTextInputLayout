@@ -60,6 +60,7 @@ public class CustomTextInputLayout
     private boolean isSpinner = false;
 
     private float textSize;
+    private ColorStateList textColor;
     private boolean enabled = true;
     private int textAlignment;
     private int textStyle;
@@ -117,6 +118,8 @@ public class CustomTextInputLayout
                 isSpinner = a.getBoolean(attr, false);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
                 textSize = a.getDimension(attr, 0);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
+                textColor = a.getColorStateList(attr);
             } else if (attr == R.styleable.CustomTextInputLayout_android_enabled) {
                 enabled = a.getBoolean(attr, true);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textAlignment) {
@@ -320,6 +323,10 @@ public class CustomTextInputLayout
                 setEndIconTintList(ColorStateList.valueOf(endIconTint));
                 setEndIconTintMode(PorterDuff.Mode.SRC_IN);
             }
+        }
+
+        if (textColor != null) {
+            setTextColorStateList(textColor);
         }
 
         if (textAlignment >= 0) {
