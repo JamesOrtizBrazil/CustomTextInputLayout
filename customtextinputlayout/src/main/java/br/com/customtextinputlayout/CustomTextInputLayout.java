@@ -164,13 +164,13 @@ public class CustomTextInputLayout
     }
 
     private void initConfig() {
+        LinearLayout ll = findViewById(R.id.customText);
+        
         if (isSpinner) {
             customSpinner = new CustomAppCompatAutoCompleteTextView(getContext());
             customSpinner.setFocusable(false);
             customSpinner.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
-
-            LinearLayout ll = findViewById(R.id.customText);
 
             if (((getResources().getConfiguration().screenLayout &
                     Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE)) {
@@ -180,7 +180,7 @@ public class CustomTextInputLayout
                 ll.setPadding(0,40,0,0);
             }
 
-            addView(customSpinner);
+            ll.addView(customSpinner);
 
             if (textSize > 0) {
                 customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
@@ -206,7 +206,7 @@ public class CustomTextInputLayout
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
-            addView(editText);
+            ll.addView(editText);
 
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
