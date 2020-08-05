@@ -165,7 +165,7 @@ public class CustomTextInputLayout
 
     private void initConfig() {
         LinearLayout ll = findViewById(R.id.customText);
-        
+
         if (isSpinner) {
             customSpinner = new CustomAppCompatAutoCompleteTextView(getContext());
             customSpinner.setFocusable(false);
