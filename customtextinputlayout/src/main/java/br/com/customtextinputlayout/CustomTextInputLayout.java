@@ -164,8 +164,6 @@ public class CustomTextInputLayout
     }
 
     private void initConfig() {
-        LinearLayout ll = findViewById(R.id.customText);
-
         if (isSpinner) {
             customSpinner = new CustomAppCompatAutoCompleteTextView(getContext());
             customSpinner.setFocusable(false);
@@ -177,10 +175,9 @@ public class CustomTextInputLayout
                 customSpinner.setPadding(10, 10, 0, 0);
             } else {
                 customSpinner.setPadding(30, 45, 0, 0);
-                ll.setPadding(0,40,0,0);
             }
 
-            ll.addView(customSpinner);
+            addView(customSpinner);
 
             if (textSize > 0) {
                 customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
@@ -206,7 +203,7 @@ public class CustomTextInputLayout
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
-            ll.addView(editText);
+            addView(editText);
 
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -1056,8 +1053,7 @@ public class CustomTextInputLayout
 
 }
 
-class CustomAppCompatAutoCompleteTextView
-        extends AppCompatAutoCompleteTextView {
+class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
 
     private final Context context;
 
@@ -1091,16 +1087,13 @@ class CustomAppCompatAutoCompleteTextView
     private void init() {
         this.setCustomSelectionActionModeCallback(new ActionModeCallbackInterceptor());
         this.setLongClickable(false);
-
-
     }
 
     /**
      * Prevents the action bar (top horizontal bar with cut, copy, paste, etc.) from appearing
      * by intercepting the callback that would cause it to be created, and returning false.
      */
-    private class ActionModeCallbackInterceptor
-            implements ActionMode.Callback {
+    private class ActionModeCallbackInterceptor implements ActionMode.Callback {
         private final String TAG = CustomAppCompatAutoCompleteTextView.class.getSimpleName();
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
