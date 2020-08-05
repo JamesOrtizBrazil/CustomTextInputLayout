@@ -170,11 +170,14 @@ public class CustomTextInputLayout
             customSpinner.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
 
+            LinearLayout ll = findViewById(R.id.customText);
+
             if (((getResources().getConfiguration().screenLayout &
                     Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE)) {
                 customSpinner.setPadding(10, 10, 0, 0);
             } else {
-                //customSpinner.setPadding(30, 25, 0, 0);
+                customSpinner.setPadding(30, 45, 0, 0);
+                ll.setPadding(0,40,0,0);
             }
 
             addView(customSpinner);
@@ -182,7 +185,7 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
-            //customSpinner.requestLayout();
+            customSpinner.requestLayout();
 
             customSpinner.setSingleLine();
 
@@ -1088,6 +1091,8 @@ class CustomAppCompatAutoCompleteTextView
     private void init() {
         this.setCustomSelectionActionModeCallback(new ActionModeCallbackInterceptor());
         this.setLongClickable(false);
+
+
     }
 
     /**
