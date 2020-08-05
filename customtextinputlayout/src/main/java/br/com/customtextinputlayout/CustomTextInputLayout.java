@@ -174,7 +174,7 @@ public class CustomTextInputLayout
                     Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE)) {
                 customSpinner.setPadding(10, 10, 0, 0);
             } else {
-                customSpinner.setPadding(30, 25, 0, 0);
+                //customSpinner.setPadding(30, 25, 0, 0);
             }
 
             addView(customSpinner);
@@ -182,7 +182,7 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
-            customSpinner.requestLayout();
+            //customSpinner.requestLayout();
 
             customSpinner.setSingleLine();
 
