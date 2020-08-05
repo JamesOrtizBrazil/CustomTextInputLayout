@@ -174,7 +174,7 @@ public class CustomTextInputLayout
                     Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE)) {
                 customSpinner.setPadding(10, 10, 0, 0);
             } else {
-                customSpinner.setPadding(30, 45, 0, 0);
+                customSpinner.setPadding(30, 25, 0, 0);
             }
 
             addView(customSpinner);
@@ -1053,7 +1053,8 @@ public class CustomTextInputLayout
 
 }
 
-class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
+class CustomAppCompatAutoCompleteTextView
+        extends AppCompatAutoCompleteTextView {
 
     private final Context context;
 
@@ -1093,7 +1094,8 @@ class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView 
      * Prevents the action bar (top horizontal bar with cut, copy, paste, etc.) from appearing
      * by intercepting the callback that would cause it to be created, and returning false.
      */
-    private class ActionModeCallbackInterceptor implements ActionMode.Callback {
+    private class ActionModeCallbackInterceptor
+            implements ActionMode.Callback {
         private final String TAG = CustomAppCompatAutoCompleteTextView.class.getSimpleName();
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
