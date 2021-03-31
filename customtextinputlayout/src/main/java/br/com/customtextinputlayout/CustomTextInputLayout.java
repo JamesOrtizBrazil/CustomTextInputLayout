@@ -980,7 +980,9 @@ public class CustomTextInputLayout
     }
 
     public void myOnFocusChangeListener(View.OnFocusChangeListener listener) {
-        this.mOnFocusChangeListener = listener;
+        if (!isSpinner) {
+            editText.setOnFocusChangeListener(listener);
+        }
     }
 
     public void setImeOtions(int imeOtions) {
