@@ -787,7 +787,8 @@ public class CustomTextInputLayout
                 editText.removeTextChangedListener(this);
 
                 String str = s.toString();
-                str = remover(str);
+                str = Normalizer.normalize(str, Normalizer.Form.NFD)
+                        .replaceAll("[^\\p{ASCII}]", "");
                 setText(str);
                 if (editText.getText() != null) {
                     editText.setSelection(editText.getText().toString().length());
@@ -798,29 +799,6 @@ public class CustomTextInputLayout
         };
 
         editText.addTextChangedListener(removerAcentosWatcher);
-    }
-
-    public static String remover(final String s) {
-        String acentuado = "çÇáéíóúýÁÉÍÓÚÝàèìòùÀÈÌÒÙãõñäëïöüÿÄËÏÖÜÃÕÑâêîôûÂÊÎÔÛ";
-        String semAcento = "cCaeiouyAEIOUYaeiouAEIOUaonaeiouyAEIOUAONaeiouAEIOU";
-        char[] tabela = new char[256];
-        for (int i = 0; i < tabela.length; ++i) {
-            tabela[i] = (char) i;
-        }
-        for (int i = 0; i < acentuado.length(); ++i) {
-            tabela[acentuado.charAt(i)] = semAcento.charAt(i);
-        }
-
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < s.length(); ++i) {
-            char ch = s.charAt(i);
-            if (ch < 256) {
-                sb.append(tabela[ch]);
-            } else {
-                sb.append(ch);
-            }
-        }
-        return sb.toString();
     }
 
     public <T extends ListAdapter & Filterable> void setAdapter(T adapter) {
