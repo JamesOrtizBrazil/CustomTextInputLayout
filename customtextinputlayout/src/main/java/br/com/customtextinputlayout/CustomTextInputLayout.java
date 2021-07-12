@@ -771,42 +771,56 @@ public class CustomTextInputLayout
     }
 
     private void disableChars() {
-        InputFilter[] editFilters = editText.getFilters();
-        InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
-        System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
-        newFilters[editFilters.length] = (source, start, end, dest, dstart, dend) -> {
-            String chars = "`*~^´";
+        TextWatcher removerAcentosWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            if (source instanceof SpannableStringBuilder) {
-                SpannableStringBuilder sourceAsSpannableBuilder = (SpannableStringBuilder) source;
-                for (int i = end - 1; i >= start; i--) {
-                    char currentChar = source.charAt(i);
-                    if (!Character.isLetterOrDigit(currentChar) && !Character.isSpaceChar(currentChar)) {
-                        if (!chars.contains(String.valueOf(currentChar))) {
-                            sourceAsSpannableBuilder.delete(i, i + 1);
-                        }
-                    }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                editText.removeTextChangedListener(this);
+
+                String str = s.toString();
+                str = remover(str);
+                setText(str);
+                if (editText.getText() != null) {
+                    editText.setSelection(editText.getText().toString().length());
                 }
-                return Normalizer.normalize(source, Normalizer.Form.NFD)
-                        .replaceAll("[^\\p{ASCII}]", "");
-            } else {
-                StringBuilder filteredStringBuilder = new StringBuilder();
-                for (int i = start; i < end; i++) {
-                    char currentChar = source.charAt(i);
-                    if (Character.isLetterOrDigit(currentChar) || Character.isSpaceChar(currentChar)) {
-                        filteredStringBuilder.append(currentChar);
-                    } else {
-                        if (!chars.contains(String.valueOf(currentChar))) {
-                            filteredStringBuilder.append(currentChar);
-                        }
-                    }
-                }
-                return Normalizer.normalize(filteredStringBuilder.toString(), Normalizer.Form.NFD)
-                        .replaceAll("[^\\p{ASCII}]", "");
+
+                editText.addTextChangedListener(this);
             }
         };
 
-        editText.setFilters(newFilters);
+        editText.addTextChangedListener(removerAcentosWatcher);
+    }
+
+    public static String remover(final String s) {
+        String acentuado = "çÇáéíóúýÁÉÍÓÚÝàèìòùÀÈÌÒÙãõñäëïöüÿÄËÏÖÜÃÕÑâêîôûÂÊÎÔÛ";
+        String semAcento = "cCaeiouyAEIOUYaeiouAEIOUaonaeiouyAEIOUAONaeiouAEIOU";
+        char[] tabela = new char[256];
+        for (int i = 0; i < tabela.length; ++i) {
+            tabela[i] = (char) i;
+        }
+        for (int i = 0; i < acentuado.length(); ++i) {
+            tabela[acentuado.charAt(i)] = semAcento.charAt(i);
+        }
+
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < s.length(); ++i) {
+            char ch = s.charAt(i);
+            if (ch < 256) {
+                sb.append(tabela[ch]);
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
     }
 
     public <T extends ListAdapter & Filterable> void setAdapter(T adapter) {
