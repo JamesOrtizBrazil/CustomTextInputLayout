@@ -1053,8 +1053,6 @@ public class CustomTextInputLayout
         }
     }
 
-    //
-
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
