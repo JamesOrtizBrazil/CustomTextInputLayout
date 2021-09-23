@@ -1045,6 +1045,14 @@ public class CustomTextInputLayout
         minDate = date;
     }
 
+    public void setCustomClickListener(OnClickListener listener) {
+        if (isSpinner) {
+            customSpinner.setOnClickListener(listener);
+        } else {
+            editText.setOnClickListener(listener);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
