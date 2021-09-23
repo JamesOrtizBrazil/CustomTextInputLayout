@@ -1052,7 +1052,7 @@ public class CustomTextInputLayout
             editText.setOnClickListener(listener);
         }
     }
-
+//
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
