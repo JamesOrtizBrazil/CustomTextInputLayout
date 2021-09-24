@@ -97,6 +97,7 @@ public class CustomTextInputLayout
     private Date minDate;
     private Calendar dataEscolhida;
     private boolean exibeDiaSemana = false;
+    private boolean weekends = true;
 
     private Context context;
 
@@ -857,7 +858,7 @@ public class CustomTextInputLayout
             dataEscolhida = null;
         });
         dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
-        dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
+        dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance(), weekends));
     }
 
     @Override
@@ -1070,7 +1071,9 @@ public class CustomTextInputLayout
         this.exibeDiaSemana = exibeDiaSemana;
     }
 
-    //
+    public void setWeekends(boolean weekends) {
+        this.weekends = weekends;
+    }
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
@@ -1138,9 +1141,12 @@ class DatePickerRangeLimiter
         implements DateRangeLimiter {
 
     private Calendar startDate;
+    private boolean weekends = true;
 
-    public DatePickerRangeLimiter(Calendar startDate) {
+    public DatePickerRangeLimiter(Calendar startDate,
+                                  boolean weekends) {
         this.startDate = startDate;
+        this.weekends =weekends;
     }
 
     public DatePickerRangeLimiter(Parcel in) {
@@ -1188,8 +1194,12 @@ class DatePickerRangeLimiter
         if (deduzirDatasInt(now.getTime(), c.getTime()) < 0) {
             return true;
         } else {
-            int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-            return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+            if (weekends) {
+                return  true;
+            } else {
+                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+                return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+            }
         }
     }
 
