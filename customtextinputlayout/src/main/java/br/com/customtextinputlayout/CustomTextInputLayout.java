@@ -1,7 +1,7 @@
 package br.com.customtextinputlayout;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -10,11 +10,9 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
@@ -34,10 +32,14 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.Normalizer;
 import java.text.NumberFormat;
@@ -89,8 +91,11 @@ public class CustomTextInputLayout
     private Date maxDate;
     private Date minDate;
 
+    private Context context;
+
     public CustomTextInputLayout(Context context) {
         super(context);
+        this.context = context;
 
         initConfig();
     }
@@ -98,6 +103,8 @@ public class CustomTextInputLayout
     @SuppressLint("PrivateResource")
     public CustomTextInputLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        this.context = context;
 
         @SuppressLint("CustomViewStyleable") TypedArray c = context.obtainStyledAttributes(attrs,
                 R.styleable.TextInputLayout);
@@ -159,6 +166,8 @@ public class CustomTextInputLayout
 
     public CustomTextInputLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        this.context = context;
 
         initConfig();
     }
@@ -253,15 +262,17 @@ public class CustomTextInputLayout
                 }
                 divisors = divisors + zeros;
 
-                divisor = Integer.valueOf(divisors);
+                divisor = Integer.parseInt(divisors);
             }
 
             switch (maskType) {
                 case 1:
                     //date
 
-                    Drawable startIcon = getContext().getResources().getDrawable(R.drawable.ic_calendar_blank);
-                    startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
+                    Drawable startIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_calendar_blank, null);
+                    if (startIcon != null) {
+                        startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
+                    }
 
                     if (Build.VERSION.SDK_INT >= 17) {
                         editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
@@ -810,41 +821,30 @@ public class CustomTextInputLayout
     }
 
     private void callDialogDate() {
-        String dataInicialSelecionada = "";
-        Calendar c = getCalendar(dataInicialSelecionada);
-        int mYear = c.get(Calendar.YEAR);
-        int mMonth = c.get(Calendar.MONTH);
-        int mDay = c.get(Calendar.DAY_OF_MONTH);
+        Calendar now = Calendar.getInstance();
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                (view, year, monthOfYear, dayOfMonth) -> {
-                    String mes;
-                    String dia;
-                    monthOfYear = monthOfYear + 1;
-                    if (dayOfMonth < 10) {
-                        dia = 0 + String.valueOf(dayOfMonth);
-                    } else {
-                        dia = String.valueOf(dayOfMonth);
-                    }
-                    if (monthOfYear < 10) {
-                        mes = 0 + String.valueOf(monthOfYear);
-                    } else {
-                        mes = String.valueOf(monthOfYear);
-                    }
-                    String dataInicial = dia + "/" + mes + "/" + year;
-                    editText.setText(dataInicial);
-                    editText.setError(null);
-                    new Handler().postDelayed(() ->
-                            editText.setImeOptions(EditorInfo.IME_ACTION_NEXT), 200);
-
-                }, mYear, mMonth, mDay);
-        if (maxDate != null) {
-            datePickerDialog.getDatePicker().setMaxDate(maxDate.getTime());
-        }
-        if (minDate != null) {
-            datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
-        }
-        datePickerDialog.show();
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        (view1, year, monthOfYear, dayOfMonth) -> {
+                           /* dataEscolhida = Calendar.getInstance();
+                            dataEscolhida.set(year, (monthOfYear), dayOfMonth);
+                            String proximaVisita = Util.BRAZIL_DATE_FORMAT.format(
+                                    dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                                    .format(dataEscolhida.getTime());
+                            edtDataProximaVisita.setText(proximaVisita);
+                            alterou = true;*/
+                        },
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+        dpd.setCancelText("Limpar");
+        dpd.setOnCancelListener(dialogInterface -> {
+          /*  edtDataProximaVisita.setText("");
+            dataEscolhida = null;
+            alterou = true;*/
+        });
+        dpd.show(((AppCompatActivity)context).getSupportFragmentManager(), "Datepickerdialog");
+        //dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
     }
 
     @Override
