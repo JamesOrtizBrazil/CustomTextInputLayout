@@ -1170,6 +1170,8 @@ class DatePickerRangeLimiter
     public DatePickerRangeLimiter(Calendar startDate,
                                   Calendar endDate,
                                   boolean weekends) {
+        //por algum motivo bizarro, não está dando certo a startDate, então estou deduzindo 1 dia manualmente
+        startDate.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH) + 1);
         this.startDate = startDate;
         this.endDate = endDate;
         this.weekends = weekends;
