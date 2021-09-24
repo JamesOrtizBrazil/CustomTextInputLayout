@@ -18,6 +18,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -1056,6 +1057,7 @@ public class CustomTextInputLayout
 
     public void setMinDate(Calendar date) {
         minDate = date;
+        Log.i("Teste", "minDate = " + minDate);
     }
 
     public void setCustomClickListener(OnClickListener listener) {
@@ -1213,7 +1215,6 @@ class DatePickerRangeLimiter
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-        Calendar now = Calendar.getInstance();
 
         if (startDate != null && deduzirDatasInt(startDate.getTime(), c.getTime()) < 0) {
             return true;
