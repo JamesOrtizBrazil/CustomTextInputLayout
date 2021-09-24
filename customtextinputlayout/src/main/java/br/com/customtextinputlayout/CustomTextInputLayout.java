@@ -1215,9 +1215,9 @@ class DatePickerRangeLimiter
         c.set(Calendar.DAY_OF_MONTH, day);
         Calendar now = Calendar.getInstance();
 
-        if (startDate != null && deduzirDatasInt(startDate.getTime(), c.getTime()) < 0) {
+        if (startDate != null && deduzirDatasInt(startDate.getTime(), c.getTime()) <= 0) {
             return true;
-        } else if (endDate != null && deduzirDatasInt(c.getTime(), endDate.getTime()) < 0) {
+        } else if (endDate != null && deduzirDatasInt(c.getTime(), endDate.getTime()) <= 0) {
             return true;
         } else {
             if (weekends) {
