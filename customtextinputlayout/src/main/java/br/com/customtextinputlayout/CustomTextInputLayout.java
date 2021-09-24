@@ -1090,6 +1090,11 @@ public class CustomTextInputLayout
         editText.setText(dataString);
         editText.setError(null);
     }
+
+    public Calendar getDataEscolhida() {
+        return dataEscolhida;
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
