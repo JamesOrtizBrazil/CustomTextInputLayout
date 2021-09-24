@@ -1073,6 +1073,23 @@ public class CustomTextInputLayout
     public void setWeekends(boolean weekends) {
         this.weekends = weekends;
     }
+
+    public void setDataEscolhida(Calendar dataEscolhida) {
+        this.dataEscolhida = dataEscolhida;
+
+        String dataString = "";
+        if (dataEscolhida != null) {
+            if (exibeDiaSemana) {
+                dataString = BRAZIL_DATE_FORMAT.format(
+                        dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                        .format(dataEscolhida.getTime());
+            } else {
+                dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
+            }
+        }
+        editText.setText(dataString);
+        editText.setError(null);
+    }
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
