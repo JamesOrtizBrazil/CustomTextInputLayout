@@ -847,7 +847,7 @@ public class CustomTextInputLayout
         dpd.setOnCancelListener(dialogInterface -> {
             editText.setText("");
             dataEscolhida = null;
-            //alterou = true;
+            //alterou = true; //
         });
         dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
         //dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
