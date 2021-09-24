@@ -835,7 +835,6 @@ public class CustomTextInputLayout
 
         DatePickerDialog dpd = DatePickerDialog.newInstance(
                 (view1, year, monthOfYear, dayOfMonth) -> {
-                    dataEscolhida = Calendar.getInstance();
                     dataEscolhida.set(year, (monthOfYear), dayOfMonth);
                     String dataString;
                     if (exibeDiaSemana) {
