@@ -93,8 +93,8 @@ public class CustomTextInputLayout
 
     private View.OnFocusChangeListener mOnFocusChangeListener;
 
-    private Date maxDate;
-    private Date minDate;
+    private Calendar maxDate;
+    private Calendar minDate;
     private Calendar dataEscolhida;
     private boolean exibeDiaSemana = false;
     private boolean weekends = true;
@@ -858,7 +858,7 @@ public class CustomTextInputLayout
             dataEscolhida = null;
         });
         dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
-        dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance(), weekends));
+        dpd.setDateRangeLimiter(new DatePickerRangeLimiter(minDate, maxDate, weekends));
     }
 
     @Override
@@ -1051,11 +1051,11 @@ public class CustomTextInputLayout
         }
     }
 
-    public void setMaxDate(Date date) {
+    public void setMaxDate(Calendar date) {
         maxDate = date;
     }
 
-    public void setMinDate(Date date) {
+    public void setMinDate(Calendar date) {
         minDate = date;
     }
 
@@ -1141,12 +1141,15 @@ class DatePickerRangeLimiter
         implements DateRangeLimiter {
 
     private Calendar startDate;
+    private Calendar endDate;
     private boolean weekends = true;
 
     public DatePickerRangeLimiter(Calendar startDate,
+                                  Calendar endDate,
                                   boolean weekends) {
         this.startDate = startDate;
-        this.weekends =weekends;
+        this.endDate = endDate;
+        this.weekends = weekends;
     }
 
     public DatePickerRangeLimiter(Parcel in) {
@@ -1189,13 +1192,15 @@ class DatePickerRangeLimiter
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-
         Calendar now = Calendar.getInstance();
-        if (deduzirDatasInt(now.getTime(), c.getTime()) < 0) {
+
+        if (startDate != null && deduzirDatasInt(startDate.getTime(), c.getTime()) < 0) {
+            return true;
+        } else if (endDate != null && deduzirDatasInt(c.getTime(), endDate.getTime()) < 0) {
             return true;
         } else {
             if (weekends) {
-                return  false;
+                return false;
             } else {
                 int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
                 return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
