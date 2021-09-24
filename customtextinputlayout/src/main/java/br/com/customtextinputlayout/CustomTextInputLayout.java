@@ -41,6 +41,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.text.DateFormat;
 import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -56,6 +57,7 @@ public class CustomTextInputLayout
      * Constante utilizada na definição como é a formatação brasileira de data & hora, moeda e casas decimais
      */
     public static final Locale LOCALE_BR = new Locale("pt", "BR");
+    public static final DateFormat BRAZIL_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy", LOCALE_BR);
 
     private TextInputEditText editText;
     private CustomAppCompatAutoCompleteTextView customSpinner;
@@ -90,6 +92,7 @@ public class CustomTextInputLayout
 
     private Date maxDate;
     private Date minDate;
+    private Calendar dataEscolhida;
 
     private Context context;
 
@@ -821,29 +824,32 @@ public class CustomTextInputLayout
     }
 
     private void callDialogDate() {
-        Calendar now = Calendar.getInstance();
+        if (dataEscolhida == null) {
+            dataEscolhida = Calendar.getInstance();
+        }
 
         DatePickerDialog dpd = DatePickerDialog.newInstance(
-                        (view1, year, monthOfYear, dayOfMonth) -> {
-                           /* dataEscolhida = Calendar.getInstance();
-                            dataEscolhida.set(year, (monthOfYear), dayOfMonth);
-                            String proximaVisita = Util.BRAZIL_DATE_FORMAT.format(
-                                    dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
-                                    .format(dataEscolhida.getTime());
-                            edtDataProximaVisita.setText(proximaVisita);
-                            alterou = true;*/
-                        },
-                        now.get(Calendar.YEAR),
-                        now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)
-                );
+                (view1, year, monthOfYear, dayOfMonth) -> {
+                    dataEscolhida = Calendar.getInstance();
+                    dataEscolhida.set(year, (monthOfYear), dayOfMonth);
+                    String proximaVisita = BRAZIL_DATE_FORMAT.format(
+                            dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                            .format(dataEscolhida.getTime());
+                    editText.setText(proximaVisita);
+                    editText.setError(null);
+                    //alterou = true;
+                },
+                dataEscolhida.get(Calendar.YEAR),
+                dataEscolhida.get(Calendar.MONTH),
+                dataEscolhida.get(Calendar.DAY_OF_MONTH)
+        );
         dpd.setCancelText("Limpar");
         dpd.setOnCancelListener(dialogInterface -> {
-          /*  edtDataProximaVisita.setText("");
+            editText.setText("");
             dataEscolhida = null;
-            alterou = true;*/
+            //alterou = true;
         });
-        dpd.show(((AppCompatActivity)context).getSupportFragmentManager(), "Datepickerdialog");
+        dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
         //dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
     }
 
