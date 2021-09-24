@@ -10,6 +10,8 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -40,6 +42,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.wdullaer.materialdatetimepicker.date.DateRangeLimiter;
 
 import java.text.DateFormat;
 import java.text.Normalizer;
@@ -57,7 +60,7 @@ public class CustomTextInputLayout
      * Constante utilizada na definição como é a formatação brasileira de data & hora, moeda e casas decimais
      */
     public static final Locale LOCALE_BR = new Locale("pt", "BR");
-    public static final DateFormat BRAZIL_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy", LOCALE_BR);
+    public static final DateFormat BRAZIL_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
 
     private TextInputEditText editText;
     private CustomAppCompatAutoCompleteTextView customSpinner;
@@ -93,6 +96,7 @@ public class CustomTextInputLayout
     private Date maxDate;
     private Date minDate;
     private Calendar dataEscolhida;
+    private boolean exibeDiaSemana = false;
 
     private Context context;
 
@@ -832,12 +836,16 @@ public class CustomTextInputLayout
                 (view1, year, monthOfYear, dayOfMonth) -> {
                     dataEscolhida = Calendar.getInstance();
                     dataEscolhida.set(year, (monthOfYear), dayOfMonth);
-                    String proximaVisita = BRAZIL_DATE_FORMAT.format(
-                            dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
-                            .format(dataEscolhida.getTime());
-                    editText.setText(proximaVisita);
+                    String dataString;
+                    if (exibeDiaSemana) {
+                        dataString = BRAZIL_DATE_FORMAT.format(
+                                dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                                .format(dataEscolhida.getTime());
+                    } else {
+                        dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
+                    }
+                    editText.setText(dataString);
                     editText.setError(null);
-                    //alterou = true;
                 },
                 dataEscolhida.get(Calendar.YEAR),
                 dataEscolhida.get(Calendar.MONTH),
@@ -847,10 +855,9 @@ public class CustomTextInputLayout
         dpd.setOnCancelListener(dialogInterface -> {
             editText.setText("");
             dataEscolhida = null;
-            //alterou = true; //
         });
         dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
-        //dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
+        dpd.setDateRangeLimiter(new DatePickerRangeLimiter(Calendar.getInstance()));
     }
 
     @Override
@@ -1058,7 +1065,12 @@ public class CustomTextInputLayout
             editText.setOnClickListener(listener);
         }
     }
-//
+
+    public void setExibeDiaSemana(boolean exibeDiaSemana) {
+        this.exibeDiaSemana = exibeDiaSemana;
+    }
+
+    //
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
@@ -1118,6 +1130,101 @@ class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView 
 
         public void onDestroyActionMode(ActionMode mode) {
         }
+    }
+
+}
+
+class DatePickerRangeLimiter
+        implements DateRangeLimiter {
+
+    private Calendar startDate;
+
+    public DatePickerRangeLimiter(Calendar startDate) {
+        this.startDate = startDate;
+    }
+
+    public DatePickerRangeLimiter(Parcel in) {
+
+    }
+
+    @Override
+    public int getMinYear() {
+        return 1900;
+    }
+
+    @Override
+    public int getMaxYear() {
+        return 2100;
+    }
+
+    @NonNull
+    @Override
+    public Calendar getStartDate() {
+        Calendar output = Calendar.getInstance();
+        output.set(Calendar.YEAR, 1900);
+        output.set(Calendar.DAY_OF_MONTH, 1);
+        output.set(Calendar.MONTH, Calendar.JANUARY);
+        return output;
+    }
+
+    @NonNull
+    @Override
+    public Calendar getEndDate() {
+        Calendar output = Calendar.getInstance();
+        output.set(Calendar.YEAR, 2100);
+        output.set(Calendar.DAY_OF_MONTH, 1);
+        output.set(Calendar.MONTH, Calendar.JANUARY);
+        return output;
+    }
+
+    @Override
+    public boolean isOutOfRange(int year, int month, int day) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+
+        Calendar now = Calendar.getInstance();
+        if (deduzirDatasInt(now.getTime(), c.getTime()) < 0) {
+            return true;
+        } else {
+            int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+            return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+        }
+    }
+
+    @NonNull
+    @Override
+    public Calendar setToNearestDate(@NonNull Calendar day) {
+        return day;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+    }
+
+    public static final Parcelable.Creator<DatePickerRangeLimiter> CREATOR
+            = new Parcelable.Creator<DatePickerRangeLimiter>() {
+        public DatePickerRangeLimiter createFromParcel(Parcel in) {
+            return new DatePickerRangeLimiter(in);
+        }
+
+        public DatePickerRangeLimiter[] newArray(int size) {
+            return new DatePickerRangeLimiter[size];
+        }
+    };
+
+    public static int deduzirDatasInt(Date initialDate, Date finalDate) {
+        if (initialDate == null || finalDate == null) {
+            return 0;
+        }
+        return (int) ((finalDate.getTime() - initialDate.getTime()) / (24 * 60 * 60 * 1000));
     }
 
 }
