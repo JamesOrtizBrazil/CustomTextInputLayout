@@ -1195,7 +1195,7 @@ class DatePickerRangeLimiter
             return true;
         } else {
             if (weekends) {
-                return  true;
+                return  false;
             } else {
                 int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
                 return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
