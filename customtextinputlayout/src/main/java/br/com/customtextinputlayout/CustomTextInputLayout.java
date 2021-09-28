@@ -1069,32 +1069,59 @@ public class CustomTextInputLayout
     }
 
     public void setExibeDiaSemana(boolean exibeDiaSemana) {
-        this.exibeDiaSemana = exibeDiaSemana;
+        if (!isSpinner) {
+            this.exibeDiaSemana = exibeDiaSemana;
+        }
     }
 
     public void setWeekends(boolean weekends) {
-        this.weekends = weekends;
+        if (!isSpinner) {
+            this.weekends = weekends;
+        }
     }
 
     public void setDataEscolhida(Calendar dataEscolhida) {
-        this.dataEscolhida = dataEscolhida;
+        if (!isSpinner) {
+            this.dataEscolhida = dataEscolhida;
 
-        String dataString = "";
-        if (dataEscolhida != null) {
-            if (exibeDiaSemana) {
-                dataString = BRAZIL_DATE_FORMAT.format(
-                        dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
-                        .format(dataEscolhida.getTime());
-            } else {
-                dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
+            String dataString = "";
+            if (dataEscolhida != null) {
+                if (exibeDiaSemana) {
+                    dataString = BRAZIL_DATE_FORMAT.format(
+                            dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                            .format(dataEscolhida.getTime());
+                } else {
+                    dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
+                }
             }
+            editText.setText(dataString);
+            editText.setError(null);
         }
-        editText.setText(dataString);
-        editText.setError(null);
     }
 
     public Calendar getDataEscolhida() {
         return dataEscolhida;
+    }
+
+    public void setFilter(InputFilter inputFilter) {
+        if (!isSpinner) {
+            InputFilter[] filters;
+
+            InputFilter[] oldFilters = editText.getFilters();
+            //filters.
+            if (oldFilters.length > 0) {
+                int size = oldFilters.length + 1;
+                filters = new InputFilter[size];
+                for (int i =0; i < oldFilters.length; i++) {
+                    filters[i] = oldFilters[i];
+                }
+                filters[size - 1] = inputFilter;
+            } else {
+                filters  = new InputFilter[1];
+                filters[0] = inputFilter;
+            }
+            editText.setFilters(filters);
+        }
     }
 
 }
