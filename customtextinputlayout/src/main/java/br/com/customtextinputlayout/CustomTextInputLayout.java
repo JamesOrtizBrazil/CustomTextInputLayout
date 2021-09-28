@@ -1103,23 +1103,8 @@ public class CustomTextInputLayout
         return dataEscolhida;
     }
 
-    public void setFilter(InputFilter inputFilter) {
+    public void setFilters(InputFilter[] filters) {
         if (!isSpinner) {
-            InputFilter[] filters;
-
-            InputFilter[] oldFilters = editText.getFilters();
-            //filters.
-            if (oldFilters.length > 0) {
-                int size = oldFilters.length + 1;
-                filters = new InputFilter[size];
-                for (int i =0; i < oldFilters.length; i++) {
-                    filters[i] = oldFilters[i];
-                }
-                filters[size - 1] = inputFilter;
-            } else {
-                filters  = new InputFilter[1];
-                filters[0] = inputFilter;
-            }
             editText.setFilters(filters);
         }
     }
