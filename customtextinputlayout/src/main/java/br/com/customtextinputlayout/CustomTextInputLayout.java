@@ -1109,6 +1109,19 @@ public class CustomTextInputLayout
         }
     }
 
+    public void setFocusable(boolean focusable) {
+        if (!isSpinner) {
+            editText.setFocusable(focusable);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void setOnTouchListener(View.OnTouchListener listener) {
+        if (!isSpinner) {
+            editText.setOnTouchListener(listener);
+        }
+    }
+
 }
 
 class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
