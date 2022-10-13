@@ -520,6 +520,8 @@ public class CustomTextInputLayout
     public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
         super.setEndIconOnClickListener(endIconOnClickListener);
 
+        Log.i("CustomTextInputLayout", "clicou no dropdown");
+
         if (isSpinner) {
             customSpinner.showDropDown();
         }
