@@ -1,7 +1,6 @@
 package br.com.customtextinputlayout;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -39,7 +38,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -100,7 +98,7 @@ public class CustomTextInputLayout
     private boolean exibeDiaSemana = false;
     private boolean weekends = true;
 
-    private Context context;
+    private final Context context;
 
     public CustomTextInputLayout(Context context) {
         super(context);
@@ -986,7 +984,9 @@ public class CustomTextInputLayout
     }
 
     public void myOnFocusChangeListener(View.OnFocusChangeListener listener) {
-        if (!isSpinner) {
+        if (isSpinner) {
+            customSpinner.setOnFocusChangeListener(listener);
+        } else {
             editText.setOnFocusChangeListener(listener);
         }
     }
@@ -1124,7 +1124,8 @@ public class CustomTextInputLayout
 
 }
 
-class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
+class CustomAppCompatAutoCompleteTextView
+        extends AppCompatAutoCompleteTextView {
 
     private final Context context;
 
@@ -1164,7 +1165,8 @@ class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView 
      * Prevents the action bar (top horizontal bar with cut, copy, paste, etc.) from appearing
      * by intercepting the callback that would cause it to be created, and returning false.
      */
-    private class ActionModeCallbackInterceptor implements ActionMode.Callback {
+    private static class ActionModeCallbackInterceptor
+            implements ActionMode.Callback {
         private final String TAG = CustomAppCompatAutoCompleteTextView.class.getSimpleName();
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
