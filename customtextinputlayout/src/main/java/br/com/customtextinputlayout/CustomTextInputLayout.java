@@ -34,6 +34,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.core.content.res.ResourcesCompat;
@@ -513,6 +514,15 @@ public class CustomTextInputLayout
         editText.setKeyListener(DigitsKeyListener.getInstance("0123456789,-"));
 
         setInitialBrazilDecimal();
+    }
+
+    @Override
+    public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
+        super.setEndIconOnClickListener(endIconOnClickListener);
+
+        if (isSpinner) {
+            customSpinner.showDropDown();
+        }
     }
 
     private void setInitialBrazilDecimal() {
@@ -1117,7 +1127,9 @@ public class CustomTextInputLayout
 
     @SuppressLint("ClickableViewAccessibility")
     public void setOnTouchListener(View.OnTouchListener listener) {
-        if (!isSpinner) {
+        if (isSpinner) {
+            customSpinner.setOnTouchListener(listener);
+        } else {
             editText.setOnTouchListener(listener);
         }
     }
