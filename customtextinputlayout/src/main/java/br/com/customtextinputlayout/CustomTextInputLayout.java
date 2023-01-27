@@ -80,7 +80,6 @@ public class CustomTextInputLayout
     private int endIconTint = -1;
     private int lines = 0;
     private int textGravity = 0;
-    private int textHintAppearence = 0;
 
     private int maskType = 0;
 
@@ -166,8 +165,6 @@ public class CustomTextInputLayout
                 disableClearButton = a.getBoolean(attr, false);
             } else if (attr == R.styleable.CustomTextInputLayout_textGravity) {
                 textGravity = a.getInt(attr, Gravity.NO_GRAVITY);
-            } else if (attr == R.styleable.CustomTextInputLayout_hintTextAppearance) {
-                textHintAppearence = a.getInt(attr, 0);
             }
         }
 
@@ -354,8 +351,6 @@ public class CustomTextInputLayout
 
             editText.setGravity(textGravity);
         }
-
-        setHintTextAppearance(textHintAppearence);
 
         if (textColor != null) {
             setTextColorStateList(textColor);
