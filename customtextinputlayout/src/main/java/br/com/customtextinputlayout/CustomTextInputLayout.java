@@ -1,7 +1,6 @@
 package br.com.customtextinputlayout;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -35,11 +34,11 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -101,7 +100,7 @@ public class CustomTextInputLayout
     private boolean exibeDiaSemana = false;
     private boolean weekends = true;
 
-    private Context context;
+    private final Context context;
 
     public CustomTextInputLayout(Context context) {
         super(context);
@@ -520,6 +519,17 @@ public class CustomTextInputLayout
         editText.setKeyListener(DigitsKeyListener.getInstance("0123456789,-"));
 
         setInitialBrazilDecimal();
+    }
+
+    @Override
+    public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
+        super.setEndIconOnClickListener(endIconOnClickListener);
+
+        Log.i("CustomTextInputLayout", "clicou no dropdown");
+
+        if (isSpinner) {
+            customSpinner.showDropDown();
+        }
     }
 
     private void setInitialBrazilDecimal() {
@@ -991,7 +1001,9 @@ public class CustomTextInputLayout
     }
 
     public void myOnFocusChangeListener(View.OnFocusChangeListener listener) {
-        if (!isSpinner) {
+        if (isSpinner) {
+            customSpinner.setOnFocusChangeListener(listener);
+        } else {
             editText.setOnFocusChangeListener(listener);
         }
     }
@@ -1122,14 +1134,17 @@ public class CustomTextInputLayout
 
     @SuppressLint("ClickableViewAccessibility")
     public void setOnTouchListener(View.OnTouchListener listener) {
-        if (!isSpinner) {
+        if (isSpinner) {
+            customSpinner.setOnTouchListener(listener);
+        } else {
             editText.setOnTouchListener(listener);
         }
     }
 
 }
 
-class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView {
+class CustomAppCompatAutoCompleteTextView
+        extends AppCompatAutoCompleteTextView {
 
     private final Context context;
 
@@ -1169,7 +1184,8 @@ class CustomAppCompatAutoCompleteTextView extends AppCompatAutoCompleteTextView 
      * Prevents the action bar (top horizontal bar with cut, copy, paste, etc.) from appearing
      * by intercepting the callback that would cause it to be created, and returning false.
      */
-    private class ActionModeCallbackInterceptor implements ActionMode.Callback {
+    private static class ActionModeCallbackInterceptor
+            implements ActionMode.Callback {
         private final String TAG = CustomAppCompatAutoCompleteTextView.class.getSimpleName();
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
