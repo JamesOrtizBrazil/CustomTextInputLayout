@@ -45,5 +45,7 @@
             <flag name="top" value="48" />
         </attr>
 
+        <attr name="hintTextAppearance" />
+
     </declare-styleable>
 </resources>
