@@ -259,6 +259,7 @@ public class CustomTextInputLayout
             if (textSize > 0) {
                 editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
+
             editText.requestLayout();
 
             if (decimalDigits != 2) {
@@ -1125,6 +1126,10 @@ public class CustomTextInputLayout
         if (!isSpinner) {
             editText.setFocusable(focusable);
         }
+    }
+
+    public void setTextSize(float size) {
+        editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
     }
 
     @SuppressLint("ClickableViewAccessibility")
