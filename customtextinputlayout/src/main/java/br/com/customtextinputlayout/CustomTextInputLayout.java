@@ -217,8 +217,6 @@ public class CustomTextInputLayout
             });
 
             customSpinner.setGravity(textGravity);
-
-            //customSpinner.dismissDropDown();
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -880,11 +878,11 @@ public class CustomTextInputLayout
         if (isSpinner) {
             customSpinner.setEnabled(enabled);
 
-            /*if (!enabled) {
+            if (!enabled) {
                 setEndIconMode(TextInputLayout.END_ICON_NONE);
             } else {
                 setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
-            }*/
+            }
         } else {
             if (editText != null) {
                 editText.setEnabled(enabled);
