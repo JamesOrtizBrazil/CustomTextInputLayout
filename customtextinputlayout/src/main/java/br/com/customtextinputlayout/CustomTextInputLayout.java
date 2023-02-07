@@ -218,7 +218,7 @@ public class CustomTextInputLayout
 
             customSpinner.setGravity(textGravity);
 
-            customSpinner.dismissDropDown();
+            //customSpinner.dismissDropDown();
         } else {
             editText = new TextInputEditText(getContext());
             editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
