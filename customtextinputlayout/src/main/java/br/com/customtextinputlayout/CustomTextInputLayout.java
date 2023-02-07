@@ -211,9 +211,9 @@ public class CustomTextInputLayout
             }
 
             customSpinner.setOnClickListener(v -> {
-                ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                /*((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(getApplicationWindowToken(), 0);
-                customSpinner.showDropDown();
+                customSpinner.showDropDown();*/
             });
 
             customSpinner.setGravity(textGravity);
@@ -405,7 +405,7 @@ public class CustomTextInputLayout
         }
 
         if (isSpinner) {
-            setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
+            //setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
         }
     }
 
@@ -520,7 +520,7 @@ public class CustomTextInputLayout
         setInitialBrazilDecimal();
     }
 
-    @Override
+    /*@Override
     public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
         super.setEndIconOnClickListener(endIconOnClickListener);
 
@@ -529,7 +529,7 @@ public class CustomTextInputLayout
         if (isSpinner) {
             customSpinner.showDropDown();
         }
-    }
+    }*/
 
     private void setInitialBrazilDecimal() {
         NumberFormat nf = NumberFormat.getNumberInstance(LOCALE_BR);
@@ -880,11 +880,11 @@ public class CustomTextInputLayout
         if (isSpinner) {
             customSpinner.setEnabled(enabled);
 
-            if (!enabled) {
+            /*if (!enabled) {
                 setEndIconMode(TextInputLayout.END_ICON_NONE);
             } else {
                 setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
-            }
+            }*/
         } else {
             if (editText != null) {
                 editText.setEnabled(enabled);
