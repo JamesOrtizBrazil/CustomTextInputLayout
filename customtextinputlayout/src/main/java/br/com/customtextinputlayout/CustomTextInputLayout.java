@@ -403,7 +403,7 @@ public class CustomTextInputLayout
         }
 
         if (isSpinner) {
-            //setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
+            setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
         }
     }
 
