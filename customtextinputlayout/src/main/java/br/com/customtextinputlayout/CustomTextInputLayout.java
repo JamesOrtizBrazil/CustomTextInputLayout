@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
@@ -34,7 +33,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.core.content.res.ResourcesCompat;
@@ -114,67 +112,62 @@ public class CustomTextInputLayout
 
         this.context = context;
 
-        try (@SuppressLint("CustomViewStyleable") TypedArray c = context.obtainStyledAttributes(attrs,
-                R.styleable.TextInputLayout)) {
-            final int N1 = c.getIndexCount();
-            for (int i = 0; i < N1; ++i) {
-                int attr = c.getIndex(i);
-                if (attr == R.styleable.TextInputLayout_endIconDrawable) {
-                    endIconDrawable = c.getDrawable(attr);
-                } else if (attr == R.styleable.TextInputLayout_endIconTint) {
-                    endIconTint = c.getColor(attr, -1);
-                }
+        /*
+        @SuppressLint("CustomViewStyleable") TypedArray c = context.obtainStyledAttributes(attrs,
+                R.styleable.TextInputLayout);
+        final int N1 = c.getIndexCount();
+        for (int i = 0; i < N1; ++i) {
+            int attr = c.getIndex(i);
+            if (attr == R.styleable.TextInputLayout_endIconDrawable) {
+                endIconDrawable = c.getDrawable(attr);
+            } else if (attr == R.styleable.TextInputLayout_endIconTint) {
+                endIconTint = c.getColor(attr, -1);
             }
-            c.recycle();
-        } catch (Exception e) {
-            Log.i("CustomTextInputLayout", "erro " + e.getMessage());
+        }
+        c.recycle();*/
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomTextInputLayout);
+        final int N = a.getIndexCount();
+        for (int i = 0; i < N; ++i) {
+            int attr = a.getIndex(i);
+            if (attr == R.styleable.CustomTextInputLayout_setSpinner) {
+                isSpinner = a.getBoolean(attr, false);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
+                textSize = a.getDimension(attr, 0);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
+                textColor = a.getColorStateList(attr);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_enabled) {
+                enabled = a.getBoolean(attr, true);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_textAlignment) {
+                if (Build.VERSION.SDK_INT >= 19) {
+                    textAlignment = a.getInt(attr, -1);
+                } else if (Build.VERSION.SDK_INT >= 17) {
+                    textAlignment = TEXT_ALIGNMENT_CENTER;
+                }
+            } else if (attr == R.styleable.CustomTextInputLayout_android_textStyle) {
+                textStyle = a.getInt(attr, -1);
+            } else if (attr == R.styleable.CustomTextInputLayout_textMaxLength) {
+                maxLength = a.getInteger(attr, 0);
+            } else if (attr == R.styleable.CustomTextInputLayout_isSingleLine) {
+                singleLine = a.getBoolean(attr, false);
+            } else if (attr == R.styleable.CustomTextInputLayout_enableSpecialChars) {
+                specialChars = a.getBoolean(attr, true);
+            } else if (attr == R.styleable.CustomTextInputLayout_android_inputType) {
+                inputType = a.getInt(attr, EditorInfo.TYPE_TEXT_VARIATION_NORMAL);
+            } else if (attr == R.styleable.CustomTextInputLayout_setLines) {
+                lines = a.getInteger(attr, 0);
+            } else if (attr == R.styleable.CustomTextInputLayout_maskType) {
+                maskType = a.getInt(attr, 0);
+            } else if (attr == R.styleable.CustomTextInputLayout_setDecimalDigits) {
+                decimalDigits = a.getInt(attr, 2);
+            } else if (attr == R.styleable.CustomTextInputLayout_disableClearButton) {
+                disableClearButton = a.getBoolean(attr, false);
+            } else if (attr == R.styleable.CustomTextInputLayout_textGravity) {
+                textGravity = a.getInt(attr, Gravity.NO_GRAVITY);
+            }
         }
 
-        try (TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomTextInputLayout)) {
-            final int N = a.getIndexCount();
-            for (int i = 0; i < N; ++i) {
-                int attr = a.getIndex(i);
-                if (attr == R.styleable.CustomTextInputLayout_setSpinner) {
-                    isSpinner = a.getBoolean(attr, false);
-                } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
-                    textSize = a.getDimension(attr, 0);
-                } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
-                    textColor = a.getColorStateList(attr);
-                } else if (attr == R.styleable.CustomTextInputLayout_android_enabled) {
-                    enabled = a.getBoolean(attr, true);
-                } else if (attr == R.styleable.CustomTextInputLayout_android_textAlignment) {
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        textAlignment = a.getInt(attr, -1);
-                    } else if (Build.VERSION.SDK_INT >= 17) {
-                        textAlignment = TEXT_ALIGNMENT_CENTER;
-                    }
-                } else if (attr == R.styleable.CustomTextInputLayout_android_textStyle) {
-                    textStyle = a.getInt(attr, -1);
-                } else if (attr == R.styleable.CustomTextInputLayout_textMaxLength) {
-                    maxLength = a.getInteger(attr, 0);
-                } else if (attr == R.styleable.CustomTextInputLayout_isSingleLine) {
-                    singleLine = a.getBoolean(attr, false);
-                } else if (attr == R.styleable.CustomTextInputLayout_enableSpecialChars) {
-                    specialChars = a.getBoolean(attr, true);
-                } else if (attr == R.styleable.CustomTextInputLayout_android_inputType) {
-                    inputType = a.getInt(attr, EditorInfo.TYPE_TEXT_VARIATION_NORMAL);
-                } else if (attr == R.styleable.CustomTextInputLayout_setLines) {
-                    lines = a.getInteger(attr, 0);
-                } else if (attr == R.styleable.CustomTextInputLayout_maskType) {
-                    maskType = a.getInt(attr, 0);
-                } else if (attr == R.styleable.CustomTextInputLayout_setDecimalDigits) {
-                    decimalDigits = a.getInt(attr, 2);
-                } else if (attr == R.styleable.CustomTextInputLayout_disableClearButton) {
-                    disableClearButton = a.getBoolean(attr, false);
-                } else if (attr == R.styleable.CustomTextInputLayout_textGravity) {
-                    textGravity = a.getInt(attr, Gravity.NO_GRAVITY);
-                }
-            }
-
-            a.recycle();
-        } catch (Exception e) {
-            Log.i("CustomTextInputLayout", "erro " + e.getMessage());
-        }
+        a.recycle();
 
         initConfig();
     }
