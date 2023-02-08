@@ -126,6 +126,8 @@ public class CustomTextInputLayout
                 }
             }
             c.recycle();
+        } catch (Exception e) {
+            Log.i("CustomTextInputLayout", "erro " + e.getMessage());
         }
 
         try (TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomTextInputLayout)) {
@@ -170,7 +172,10 @@ public class CustomTextInputLayout
             }
 
             a.recycle();
+        } catch (Exception e) {
+            Log.i("CustomTextInputLayout", "erro " + e.getMessage());
         }
+
         initConfig();
     }
 
