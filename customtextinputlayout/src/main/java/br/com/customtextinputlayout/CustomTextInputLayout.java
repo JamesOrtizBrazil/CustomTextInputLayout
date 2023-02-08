@@ -213,7 +213,7 @@ public class CustomTextInputLayout
             customSpinner.setOnClickListener(v -> {
                 /*((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(getApplicationWindowToken(), 0);*/
-                //customSpinner.showDropDown();
+                customSpinner.showDropDown();
             });
 
             customSpinner.setGravity(textGravity);
