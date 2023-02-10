@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CustomTextInputLayout">
-        <attr name="setSpinner" format="boolean" />
         <attr name="android:textSize" />
         <attr name="android:textColor" format="reference" />
         <attr name="android:enabled" />

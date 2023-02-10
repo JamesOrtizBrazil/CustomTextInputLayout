@@ -3,7 +3,6 @@ package br.com.customtextinputlayout;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -19,22 +18,15 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.ActionMode;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.Filterable;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -61,9 +53,6 @@ public class CustomTextInputLayout
     public static final DateFormat BRAZIL_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
 
     private TextInputEditText editText;
-    private CustomAppCompatAutoCompleteTextView customSpinner;
-
-    private boolean isSpinner = false;
 
     private float textSize;
     private ColorStateList textColor;
@@ -112,7 +101,6 @@ public class CustomTextInputLayout
 
         this.context = context;
 
-        /*
         @SuppressLint("CustomViewStyleable") TypedArray c = context.obtainStyledAttributes(attrs,
                 R.styleable.TextInputLayout);
         final int N1 = c.getIndexCount();
@@ -124,15 +112,13 @@ public class CustomTextInputLayout
                 endIconTint = c.getColor(attr, -1);
             }
         }
-        c.recycle();*/
+        c.recycle();
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomTextInputLayout);
         final int N = a.getIndexCount();
         for (int i = 0; i < N; ++i) {
             int attr = a.getIndex(i);
-            if (attr == R.styleable.CustomTextInputLayout_setSpinner) {
-                isSpinner = a.getBoolean(attr, false);
-            } else if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
+            if (attr == R.styleable.CustomTextInputLayout_android_textSize) {
                 textSize = a.getDimension(attr, 0);
             } else if (attr == R.styleable.CustomTextInputLayout_android_textColor) {
                 textColor = a.getColorStateList(attr);
@@ -181,229 +167,163 @@ public class CustomTextInputLayout
     }
 
     private void initConfig() {
-        if (isSpinner) {
-            customSpinner = new CustomAppCompatAutoCompleteTextView(getContext());
-            customSpinner.setFocusable(false);
-            customSpinner.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
+        editText = new TextInputEditText(getContext());
+        editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        addView(editText);
 
-            if (((getResources().getConfiguration().screenLayout &
-                    Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE)) {
-                customSpinner.setPadding(10, 10, 0, 0);
-            } else {
-                customSpinner.setPadding(30, 45, 0, 0);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
-            addView(customSpinner);
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (editText.isEnabled()) {
+                    if (s.length() > 0 && !disableClearButton) {
+                        setEndIconMode(END_ICON_CLEAR_TEXT);
 
-            if (textSize > 0) {
-                customSpinner.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-            }
-            customSpinner.requestLayout();
-
-            customSpinner.setSingleLine();
-
-            customSpinner.setEnabled(enabled);
-
-            if (customSpinner.getAdapter() == null) {
-                customSpinner.setOnFocusChangeListener((v, hasFocus) -> {
-                });
-            }
-
-            customSpinner.setOnClickListener(v -> {
-                /*((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(getApplicationWindowToken(), 0);*/
-                customSpinner.showDropDown();
-            });
-
-            customSpinner.setGravity(textGravity);
-        } else {
-            editText = new TextInputEditText(getContext());
-            editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            addView(editText);
-
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (editText.isEnabled()) {
-                        if (s.length() > 0 && !disableClearButton) {
-                            setEndIconMode(END_ICON_CLEAR_TEXT);
-
-                            if (endIconDrawable == null && !disableClearButton) {
-                                setEndIconDrawable(R.drawable.ic_close);
-                            }
-                        } else {
-                            setEndIconMode(END_ICON_NONE);
-                            editText.requestFocus();
+                        if (endIconDrawable == null && !disableClearButton) {
+                            setEndIconDrawable(R.drawable.ic_close);
                         }
+                    } else {
+                        setEndIconMode(END_ICON_NONE);
+                        editText.requestFocus();
                     }
                 }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
-
-            editText.setEnabled(enabled);
-
-            if (singleLine) {
-                editText.setSingleLine();
             }
 
-            if (textSize > 0) {
-                editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            @Override
+            public void afterTextChanged(Editable s) {
             }
+        });
 
-            editText.requestLayout();
+        editText.setEnabled(enabled);
 
-            if (decimalDigits != 2) {
-                String divisors = "1";
-
-                StringBuilder zeros = new StringBuilder();
-                for (int i = 0; i < decimalDigits; i++) {
-                    zeros.append("0");
-                }
-                divisors = divisors + zeros;
-
-                divisor = Integer.parseInt(divisors);
-            }
-
-            switch (maskType) {
-                case 1:
-                    //date
-
-                    Drawable startIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_calendar_blank, null);
-                    if (startIcon != null) {
-                        startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
-                    }
-
-                    if (Build.VERSION.SDK_INT >= 17) {
-                        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
-                    }
-
-                    editText.setFocusable(false);
-
-                    editText.setOnClickListener(v -> callDialogDate());
-
-                    break;
-                case 2:
-                    //phone
-                    addPhoneMask();
-                    break;
-                case 3:
-                    //brazilDecimal
-                    addBrazilDecimalMask();
-                    break;
-                case 4:
-                    //brazilMonetary
-                    addBrazilMonetaryMask();
-                    break;
-                case 5:
-                    //brazilCEP
-                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    setCustomMask("#####-###");
-                    break;
-                case 6:
-                    //brazilCNPJ
-                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    setCustomMask("##.###.###/####-##");
-                    break;
-                case 7:
-                    //brazilCPF
-                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                    setCustomMask("###.###.###-##");
-                    break;
-                case 8:
-                    //integerDotted
-                    decimalDigits = 0;
-                    divisor = 1;
-                    addBrazilDecimalMask();
-                    break;
-                default:
-                    break;
-            }
-
-            if (!specialChars) {
-                disableChars();
-            }
-
-            if (inputType != EditorInfo.TYPE_TEXT_VARIATION_NORMAL) {
-                editText.setInputType(inputType);
-
-                if (inputType == 4097) { //tive de colocar manualmente o código para funcionar pois a constante não pegava
-                    InputFilter[] editFilters = editText.getFilters();
-                    InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
-                    System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
-                    newFilters[editFilters.length] = new InputFilter.AllCaps();
-                    editText.setFilters(newFilters);
-                }
-            }
-
-            if (endIconTint != -1) {
-                setEndIconTintList(ColorStateList.valueOf(endIconTint));
-                setEndIconTintMode(PorterDuff.Mode.SRC_IN);
-            }
-
-            editText.setGravity(textGravity);
+        if (singleLine) {
+            editText.setSingleLine();
         }
+
+        if (textSize > 0) {
+            editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        }
+
+        editText.requestLayout();
+
+        if (decimalDigits != 2) {
+            String divisors = "1";
+
+            StringBuilder zeros = new StringBuilder();
+            for (int i = 0; i < decimalDigits; i++) {
+                zeros.append("0");
+            }
+            divisors = divisors + zeros;
+
+            divisor = Integer.parseInt(divisors);
+        }
+
+        switch (maskType) {
+            case 1:
+                //date
+
+                Drawable startIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_calendar_blank, null);
+                if (startIcon != null) {
+                    startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
+                }
+
+                if (Build.VERSION.SDK_INT >= 17) {
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(startIcon, null, null, null);
+                }
+
+                editText.setFocusable(false);
+
+                editText.setOnClickListener(v -> callDialogDate());
+
+                break;
+            case 2:
+                //phone
+                addPhoneMask();
+                break;
+            case 3:
+                //brazilDecimal
+                addBrazilDecimalMask();
+                break;
+            case 4:
+                //brazilMonetary
+                addBrazilMonetaryMask();
+                break;
+            case 5:
+                //brazilCEP
+                editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                setCustomMask("#####-###");
+                break;
+            case 6:
+                //brazilCNPJ
+                editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                setCustomMask("##.###.###/####-##");
+                break;
+            case 7:
+                //brazilCPF
+                editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                setCustomMask("###.###.###-##");
+                break;
+            case 8:
+                //integerDotted
+                decimalDigits = 0;
+                divisor = 1;
+                addBrazilDecimalMask();
+                break;
+            default:
+                break;
+        }
+
+        if (!specialChars) {
+            disableChars();
+        }
+
+        if (inputType != EditorInfo.TYPE_TEXT_VARIATION_NORMAL) {
+            editText.setInputType(inputType);
+
+            if (inputType == 4097) { //tive de colocar manualmente o código para funcionar pois a constante não pegava
+                InputFilter[] editFilters = editText.getFilters();
+                InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
+                System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
+                newFilters[editFilters.length] = new InputFilter.AllCaps();
+                editText.setFilters(newFilters);
+            }
+        }
+
+        if (endIconTint != -1) {
+            setEndIconTintList(ColorStateList.valueOf(endIconTint));
+            setEndIconTintMode(PorterDuff.Mode.SRC_IN);
+        }
+
+        editText.setGravity(textGravity);
 
         if (textColor != null) {
             setTextColorStateList(textColor);
         }
 
         if (textAlignment >= 0) {
-            if (isSpinner) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    customSpinner.setTextAlignment(textAlignment);
-                }
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    editText.setTextAlignment(textAlignment);
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                editText.setTextAlignment(textAlignment);
             }
         }
 
         if (textStyle >= 0) {
-            if (isSpinner) {
-                customSpinner.setTypeface(customSpinner.getTypeface(), textStyle);
-            } else {
-                editText.setTypeface(editText.getTypeface(), textStyle);
-            }
+            editText.setTypeface(editText.getTypeface(), textStyle);
         }
 
         if (maxLength > 0) {
-            if (isSpinner) {
-                InputFilter[] editFilters = customSpinner.getFilters();
-                InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
-                System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
-                newFilters[editFilters.length] = new InputFilter.LengthFilter(maxLength);
-                customSpinner.setFilters(newFilters);
-            } else {
-                InputFilter[] editFilters = editText.getFilters();
-                InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
-                System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
-                newFilters[editFilters.length] = new InputFilter.LengthFilter(maxLength);
-                editText.setFilters(newFilters);
-            }
+            InputFilter[] editFilters = editText.getFilters();
+            InputFilter[] newFilters = new InputFilter[editFilters.length + 1];
+            System.arraycopy(editFilters, 0, newFilters, 0, editFilters.length);
+            newFilters[editFilters.length] = new InputFilter.LengthFilter(maxLength);
+            editText.setFilters(newFilters);
         }
 
         if (lines > 0) {
-            if (isSpinner) {
-                customSpinner.setLines(lines);
-            } else {
-                editText.setLines(lines);
-            }
-        }
-
-        if (isSpinner) {
-            setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
+            editText.setLines(lines);
         }
     }
 
@@ -517,17 +437,6 @@ public class CustomTextInputLayout
 
         setInitialBrazilDecimal();
     }
-
-    /*@Override
-    public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
-        super.setEndIconOnClickListener(endIconOnClickListener);
-
-        Log.i("CustomTextInputLayout", "clicou no dropdown");
-
-        if (isSpinner) {
-            customSpinner.showDropDown();
-        }
-    }*/
 
     private void setInitialBrazilDecimal() {
         NumberFormat nf = NumberFormat.getNumberInstance(LOCALE_BR);
@@ -833,14 +742,6 @@ public class CustomTextInputLayout
         editText.addTextChangedListener(removerAcentosWatcher);
     }
 
-    public <T extends ListAdapter & Filterable> void setAdapter(T adapter) {
-        customSpinner.setAdapter(adapter);
-    }
-
-    public void setOnItemSelectedListener(AdapterView.OnItemClickListener listener) {
-        customSpinner.setOnItemClickListener(listener);
-    }
-
     private void callDialogDate() {
         if (dataEscolhida == null) {
             dataEscolhida = Calendar.getInstance();
@@ -875,97 +776,61 @@ public class CustomTextInputLayout
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (isSpinner) {
-            customSpinner.setEnabled(enabled);
+        if (editText != null) {
+            editText.setEnabled(enabled);
 
-            /*
             if (!enabled) {
-                setEndIconMode(TextInputLayout.END_ICON_NONE);
-            } else {
-                setEndIconMode(TextInputLayout.END_ICON_DROPDOWN_MENU);
-            }*/
-        } else {
-            if (editText != null) {
-                editText.setEnabled(enabled);
-
-                if (!enabled) {
-                    setEndIconMode(END_ICON_NONE);
-                }
+                setEndIconMode(END_ICON_NONE);
             }
         }
     }
 
     public void setTextColor(int color) {
-        if (isSpinner) {
-            customSpinner.setTextColor(color);
-        } else {
-            editText.setTextColor(color);
-        }
+        editText.setTextColor(color);
     }
 
     public void setTextColorStateList(ColorStateList list) {
-        if (isSpinner) {
-            customSpinner.setTextColor(list);
-        } else {
-            editText.setTextColor(list);
-        }
+        editText.setTextColor(list);
     }
 
     public void addTextWatcher(TextWatcher textWatcher) {
-        if (!isSpinner) {
-            editText.addTextChangedListener(textWatcher);
-        } else {
-            customSpinner.addTextChangedListener(textWatcher);
-        }
+        editText.addTextChangedListener(textWatcher);
     }
 
     public void removeTextWatcher(TextWatcher textWatcher) {
-        if (!isSpinner) {
-            editText.removeTextChangedListener(textWatcher);
-        } else {
-            customSpinner.removeTextChangedListener(textWatcher);
-        }
+        editText.removeTextChangedListener(textWatcher);
     }
 
     public void clear() {
-        if (isSpinner) {
-            customSpinner.setText("");
-        } else {
-            editText.setText("");
-        }
+        editText.setText("");
     }
 
     public String getUnmaskedText() {
         String text;
-        if (isSpinner) {
-            text = String.valueOf(customSpinner.getText());
-            text = text.replaceAll("[./-]+", "").replaceAll(" ", "");
-        } else {
-            switch (maskType) {
-                case 3:
-                case 4:
-                case 8:
-                    //brazilMonetary
-                    //brazilDecimal
-                    if (editText.getText() == null) {
+        switch (maskType) {
+            case 3:
+            case 4:
+            case 8:
+                //brazilMonetary
+                //brazilDecimal
+                if (editText.getText() == null) {
+                    text = "0";
+                } else {
+                    if (editText.getText().toString().equals("")) {
                         text = "0";
                     } else {
-                        if (editText.getText().toString().equals("")) {
-                            text = "0";
-                        } else {
-                            text = editText.getText().toString();
-                            text = text.replaceAll("[R$]", "")
-                                    .replaceAll("[.]", "")
-                                    .replaceAll("\\s+", "");
-                            text = text.replaceAll("[,]", ".");
-                        }
+                        text = editText.getText().toString();
+                        text = text.replaceAll("[R$]", "")
+                                .replaceAll("[.]", "")
+                                .replaceAll("\\s+", "");
+                        text = text.replaceAll("[,]", ".");
                     }
-                    break;
-                default:
-                    text = String.valueOf(editText.getText());
-                    text = text.replaceAll("[./-]+", "").replaceAll(" ", "");
-                    break;
-            }
+                }
+                break;
+            default:
+                text = String.valueOf(editText.getText());
+                text = text.replaceAll("[./-]+", "").replaceAll(" ", "");
+                break;
         }
 
         return text;
@@ -973,43 +838,24 @@ public class CustomTextInputLayout
 
     public String getMaskedText() {
         String text;
-        if (isSpinner) {
-            text = String.valueOf(customSpinner.getText());
-        } else {
-            text = String.valueOf(editText.getText());
-        }
-
+        text = String.valueOf(editText.getText());
         return text;
     }
 
     public void setText(String text) {
-        if (isSpinner) {
-            customSpinner.setText(text);
-        } else {
-            editText.setText(text);
-        }
+        editText.setText(text);
     }
 
     public void setOnEditorActionListener(TextView.OnEditorActionListener listener) {
-        if (isSpinner) {
-            customSpinner.setOnEditorActionListener(listener);
-        } else {
-            editText.setOnEditorActionListener(listener);
-        }
+        editText.setOnEditorActionListener(listener);
     }
 
     public void myOnFocusChangeListener(View.OnFocusChangeListener listener) {
-        if (isSpinner) {
-            customSpinner.setOnFocusChangeListener(listener);
-        } else {
-            editText.setOnFocusChangeListener(listener);
-        }
+        editText.setOnFocusChangeListener(listener);
     }
 
     public void setImeOtions(int imeOtions) {
-        if (!isSpinner) {
-            editText.setImeOptions(imeOtions);
-        }
+        editText.setImeOptions(imeOtions);
     }
 
     @Override
@@ -1019,11 +865,7 @@ public class CustomTextInputLayout
 
     @Override
     public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-        if (isSpinner) {
-            customSpinner.requestFocus();
-        } else {
-            editText.requestFocus();
-        }
+        editText.requestFocus();
         return true;
     }
 
@@ -1043,27 +885,19 @@ public class CustomTextInputLayout
     }
 
     public void setInputType(int inputType) {
-        if (!isSpinner) {
-            editText.setInputType(inputType);
-        }
+        editText.setInputType(inputType);
     }
 
     public void addTextChangedListener(TextWatcher textWatcher) {
-        if (!isSpinner) {
-            editText.addTextChangedListener(textWatcher);
-        }
+        editText.addTextChangedListener(textWatcher);
     }
 
     public void setSelection(int selection) {
-        if (!isSpinner) {
-            editText.setSelection(selection);
-        }
+        editText.setSelection(selection);
     }
 
     public void setOnKeyListener(OnKeyListener onKeyListener) {
-        if (!isSpinner) {
-            editText.setOnKeyListener(onKeyListener);
-        }
+        editText.setOnKeyListener(onKeyListener);
     }
 
     public void setMaxDate(Calendar date) {
@@ -1076,42 +910,32 @@ public class CustomTextInputLayout
     }
 
     public void setCustomClickListener(OnClickListener listener) {
-        if (isSpinner) {
-            customSpinner.setOnClickListener(listener);
-        } else {
-            editText.setOnClickListener(listener);
-        }
+        editText.setOnClickListener(listener);
     }
 
     public void setExibeDiaSemana(boolean exibeDiaSemana) {
-        if (!isSpinner) {
-            this.exibeDiaSemana = exibeDiaSemana;
-        }
+        this.exibeDiaSemana = exibeDiaSemana;
     }
 
     public void setWeekends(boolean weekends) {
-        if (!isSpinner) {
-            this.weekends = weekends;
-        }
+        this.weekends = weekends;
     }
 
     public void setDataEscolhida(Calendar dataEscolhida) {
-        if (!isSpinner) {
-            this.dataEscolhida = dataEscolhida;
+        this.dataEscolhida = dataEscolhida;
 
-            String dataString = "";
-            if (dataEscolhida != null) {
-                if (exibeDiaSemana) {
-                    dataString = BRAZIL_DATE_FORMAT.format(
-                            dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
-                            .format(dataEscolhida.getTime());
-                } else {
-                    dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
-                }
+        String dataString = "";
+        if (dataEscolhida != null) {
+            if (exibeDiaSemana) {
+                dataString = BRAZIL_DATE_FORMAT.format(
+                        dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                        .format(dataEscolhida.getTime());
+            } else {
+                dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
             }
-            editText.setText(dataString);
-            editText.setError(null);
         }
+        editText.setText(dataString);
+        editText.setError(null);
     }
 
     public Calendar getDataEscolhida() {
@@ -1119,15 +943,11 @@ public class CustomTextInputLayout
     }
 
     public void setFilters(InputFilter[] filters) {
-        if (!isSpinner) {
-            editText.setFilters(filters);
-        }
+        editText.setFilters(filters);
     }
 
     public void setFocusable(boolean focusable) {
-        if (!isSpinner) {
-            editText.setFocusable(focusable);
-        }
+        editText.setFocusable(focusable);
     }
 
     public void setTextSize(float size) {
@@ -1136,74 +956,7 @@ public class CustomTextInputLayout
 
     @SuppressLint("ClickableViewAccessibility")
     public void setOnTouchListener(View.OnTouchListener listener) {
-        if (isSpinner) {
-            customSpinner.setOnTouchListener(listener);
-        } else {
-            editText.setOnTouchListener(listener);
-        }
-    }
-
-}
-
-class CustomAppCompatAutoCompleteTextView
-        extends AppCompatAutoCompleteTextView {
-
-    private final Context context;
-
-    boolean canPaste() {
-        return false;
-    }
-
-    @Override
-    public boolean isSuggestionsEnabled() {
-        return false;
-    }
-
-    public CustomAppCompatAutoCompleteTextView(Context context) {
-        super(context);
-        this.context = context;
-        init();
-    }
-
-    public CustomAppCompatAutoCompleteTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.context = context;
-        init();
-    }
-
-    public CustomAppCompatAutoCompleteTextView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        this.context = context;
-        init();
-    }
-
-    private void init() {
-        this.setCustomSelectionActionModeCallback(new ActionModeCallbackInterceptor());
-        this.setLongClickable(false);
-    }
-
-    /**
-     * Prevents the action bar (top horizontal bar with cut, copy, paste, etc.) from appearing
-     * by intercepting the callback that would cause it to be created, and returning false.
-     */
-    private static class ActionModeCallbackInterceptor
-            implements ActionMode.Callback {
-        private final String TAG = CustomAppCompatAutoCompleteTextView.class.getSimpleName();
-
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return false;
-        }
-
-        public void onDestroyActionMode(ActionMode mode) {
-        }
+        editText.setOnTouchListener(listener);
     }
 
 }
