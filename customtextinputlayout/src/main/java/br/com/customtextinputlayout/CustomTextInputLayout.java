@@ -209,8 +209,6 @@ public class CustomTextInputLayout
             editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         }
 
-        setEndIconMode(END_ICON_CLEAR_TEXT);
-
         editText.requestLayout();
 
         if (decimalDigits != 2) {
