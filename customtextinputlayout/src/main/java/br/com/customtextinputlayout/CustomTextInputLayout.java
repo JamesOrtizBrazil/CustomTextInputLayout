@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -200,6 +201,8 @@ public class CustomTextInputLayout
 
         editText.setEnabled(enabled);
 
+
+
         if (singleLine) {
             editText.setSingleLine();
         }
@@ -324,6 +327,15 @@ public class CustomTextInputLayout
 
         if (lines > 0) {
             editText.setLines(lines);
+        }
+    }
+
+    @Override
+    public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
+        super.setEndIconOnClickListener(endIconOnClickListener);
+
+        if (editText != null) {
+            editText.setText("");
         }
     }
 
