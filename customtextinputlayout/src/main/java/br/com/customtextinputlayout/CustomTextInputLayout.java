@@ -201,8 +201,6 @@ public class CustomTextInputLayout
 
         editText.setEnabled(enabled);
 
-
-
         if (singleLine) {
             editText.setSingleLine();
         }
@@ -210,6 +208,8 @@ public class CustomTextInputLayout
         if (textSize > 0) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         }
+
+        setEndIconMode(END_ICON_CLEAR_TEXT);
 
         editText.requestLayout();
 
@@ -329,16 +329,6 @@ public class CustomTextInputLayout
             editText.setLines(lines);
         }
     }
-
-    @Override
-    public void setEndIconOnClickListener(@Nullable OnClickListener endIconOnClickListener) {
-        super.setEndIconOnClickListener(endIconOnClickListener);
-
-        if (editText != null) {
-            editText.setText("");
-        }
-    }
-
     private void addPhoneMask() {
         TextWatcher phoneWatcher = new TextWatcher() {
             private boolean mFormatting; // this is a flag which prevents the stack(onTextChanged)
