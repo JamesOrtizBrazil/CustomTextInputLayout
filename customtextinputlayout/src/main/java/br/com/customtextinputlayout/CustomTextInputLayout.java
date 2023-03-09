@@ -187,6 +187,8 @@ public class CustomTextInputLayout
                         if (endIconDrawable == null && !disableClearButton) {
                             setEndIconDrawable(R.drawable.ic_close);
                         }
+
+                        editText.requestFocus();
                     } else {
                         setEndIconMode(END_ICON_NONE);
                         editText.requestFocus();
