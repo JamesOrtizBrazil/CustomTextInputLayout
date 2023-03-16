@@ -228,7 +228,6 @@ public class CustomTextInputLayout
         switch (maskType) {
             case 1:
                 //date
-
                 Drawable startIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_calendar_blank, null);
                 if (startIcon != null) {
                     startIcon.setColorFilter(getResources().getColor(R.color.cinzaEscuro), PorterDuff.Mode.SRC_IN);
@@ -239,9 +238,7 @@ public class CustomTextInputLayout
                 }
 
                 editText.setFocusable(false);
-
                 editText.setOnClickListener(v -> callDialogDate());
-
                 break;
             case 2:
                 //phone
@@ -275,6 +272,11 @@ public class CustomTextInputLayout
                 decimalDigits = 0;
                 divisor = 1;
                 addBrazilDecimalMask();
+                break;
+            case 9:
+                //date no icon
+                editText.setFocusable(false);
+                editText.setOnClickListener(v -> callDialogDate());
                 break;
             default:
                 break;
