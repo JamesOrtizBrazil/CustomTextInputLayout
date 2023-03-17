@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -753,7 +754,7 @@ public class CustomTextInputLayout
             dataEscolhida = Calendar.getInstance();
         }
 
-        DatePickerDialog dpd = ClearableDatePickerDialog.newInstance(
+        ClearableDatePickerDialog dpd = (ClearableDatePickerDialog) ClearableDatePickerDialog.newInstance(
                 (view1, year, monthOfYear, dayOfMonth) -> {
                     dataEscolhida.set(year, (monthOfYear), dayOfMonth);
                     String dataString;
@@ -771,14 +772,17 @@ public class CustomTextInputLayout
                 dataEscolhida.get(Calendar.MONTH),
                 dataEscolhida.get(Calendar.DAY_OF_MONTH)
         );
-
+        
         dpd.setCancelText("Limpar");
         dpd.setOnCancelListener(dialogInterface -> {
             editText.setText("");
             dataEscolhida = null;
         });
 
-        dpd.setCancelable(false);
+        dpd.setOnDateClearedListener(view -> {
+            Toast.makeText(context, "sair", Toast.LENGTH_SHORT).show();
+        });
+
         dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
         dpd.setDateRangeLimiter(new DatePickerRangeLimiter(minDate, maxDate, weekends));
     }
