@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
@@ -20,15 +19,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -333,7 +331,6 @@ public class CustomTextInputLayout
             editText.setLines(lines);
         }
     }
-
     private void addPhoneMask() {
         TextWatcher phoneWatcher = new TextWatcher() {
             private boolean mFormatting; // this is a flag which prevents the stack(onTextChanged)
@@ -754,7 +751,7 @@ public class CustomTextInputLayout
             dataEscolhida = Calendar.getInstance();
         }
 
-        ClearableDatePickerDialog dpd = (ClearableDatePickerDialog) ClearableDatePickerDialog.newInstance(
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
                 (view1, year, monthOfYear, dayOfMonth) -> {
                     dataEscolhida.set(year, (monthOfYear), dayOfMonth);
                     String dataString;
@@ -772,17 +769,11 @@ public class CustomTextInputLayout
                 dataEscolhida.get(Calendar.MONTH),
                 dataEscolhida.get(Calendar.DAY_OF_MONTH)
         );
-        
         dpd.setCancelText("Limpar");
         dpd.setOnCancelListener(dialogInterface -> {
             editText.setText("");
             dataEscolhida = null;
         });
-
-        dpd.setOnDateClearedListener(view -> {
-            Toast.makeText(context, "sair", Toast.LENGTH_SHORT).show();
-        });
-
         dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
         dpd.setDateRangeLimiter(new DatePickerRangeLimiter(minDate, maxDate, weekends));
     }
@@ -1080,52 +1071,4 @@ class DatePickerRangeLimiter
         return (int) ((finalDate.getTime() - initialDate.getTime()) / (24 * 60 * 60 * 1000));
     }
 
-}
-
-class ClearableDatePickerDialog extends DatePickerDialog {
-
-    private OnDateClearedListener mOnDateClearedListener;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
-        View view = super.onCreateView(inflater, container, state);
-        LinearLayout buttonContainer = view.findViewById(
-                com.wdullaer.materialdatetimepicker.R.id.mdtp_done_background);
-        View clearButton = inflater.inflate(R.layout.date_picker_dialog_clear_button,
-                buttonContainer, false);
-        clearButton.setOnClickListener(new ClearClickListener());
-        buttonContainer.addView(clearButton, 0);
-
-        return view;
-    }
-
-    public void setOnDateClearedListener(OnDateClearedListener listener) {
-        mOnDateClearedListener = listener;
-    }
-
-    public OnDateClearedListener getOnDateClearedListener() {
-        return mOnDateClearedListener;
-    }
-
-    public interface OnDateClearedListener {
-        /**
-         * @param view The view associated with this listener.
-         */
-        void onDateCleared(ClearableDatePickerDialog view);
-    }
-
-    private class ClearClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            tryVibrate();
-
-            OnDateClearedListener listener = getOnDateClearedListener();
-            if (listener != null) {
-                listener.onDateCleared(ClearableDatePickerDialog.this);
-            }
-
-            dismiss();
-        }
-
-    }
 }
