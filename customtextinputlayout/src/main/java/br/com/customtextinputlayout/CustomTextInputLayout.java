@@ -26,20 +26,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.CompositeDateValidator;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.wdullaer.materialdatetimepicker.date.DateRangeLimiter;
 
 import java.text.DateFormat;
 import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -331,6 +334,7 @@ public class CustomTextInputLayout
             editText.setLines(lines);
         }
     }
+
     private void addPhoneMask() {
         TextWatcher phoneWatcher = new TextWatcher() {
             private boolean mFormatting; // this is a flag which prevents the stack(onTextChanged)
@@ -751,31 +755,56 @@ public class CustomTextInputLayout
             dataEscolhida = Calendar.getInstance();
         }
 
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
-                (view1, year, monthOfYear, dayOfMonth) -> {
-                    dataEscolhida.set(year, (monthOfYear), dayOfMonth);
-                    String dataString;
-                    if (exibeDiaSemana) {
-                        dataString = BRAZIL_DATE_FORMAT.format(
-                                dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
-                                .format(dataEscolhida.getTime());
-                    } else {
-                        dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
-                    }
-                    editText.setText(dataString);
-                    editText.setError(null);
-                },
-                dataEscolhida.get(Calendar.YEAR),
-                dataEscolhida.get(Calendar.MONTH),
-                dataEscolhida.get(Calendar.DAY_OF_MONTH)
-        );
-        dpd.setCancelText("Limpar");
-        dpd.setOnCancelListener(dialogInterface -> {
+        CalendarConstraints.Builder constraintsBuilderRange = new CalendarConstraints.Builder();
+
+        ArrayList<CalendarConstraints.DateValidator> listValidators = new ArrayList<>();
+
+        if (minDate != null) {
+            CalendarConstraints.DateValidator dateValidatorMin = DateValidatorPointForward.from(minDate.getTimeInMillis());
+            listValidators.add(dateValidatorMin);
+        }
+
+        if (maxDate != null) {
+            CalendarConstraints.DateValidator dateValidatorMax = DateValidatorPointBackward.before(maxDate.getTimeInMillis());
+            listValidators.add(dateValidatorMax);
+        }
+
+        if (!weekends) {
+            WeekdayDateValidator weekdayDateValidator = new WeekdayDateValidator();
+            listValidators.add(weekdayDateValidator);
+        }
+
+        CalendarConstraints.DateValidator validators = CompositeDateValidator.allOf(listValidators);
+        constraintsBuilderRange.setValidator(validators);
+
+        MaterialDatePicker<Long> dp = MaterialDatePicker.Builder.datePicker()
+                .setSelection(dataEscolhida.getTimeInMillis())
+                .setNegativeButtonText("LIMPAR")
+                .setCalendarConstraints(constraintsBuilderRange.build())
+                .build();
+
+        dp.addOnPositiveButtonClickListener(selection -> {
+            Calendar utc = Calendar.getInstance();
+            utc.setTimeInMillis(selection);
+            utc.set(Calendar.DAY_OF_MONTH, utc.get(Calendar.DAY_OF_MONTH) + 1);
+            dataEscolhida = utc;
+
+            String dataString;
+            if (exibeDiaSemana) {
+                dataString = BRAZIL_DATE_FORMAT.format(
+                        dataEscolhida.getTime()) + " - " + new SimpleDateFormat("EEEE", LOCALE_BR)
+                        .format(dataEscolhida.getTime());
+            } else {
+                dataString = BRAZIL_DATE_FORMAT.format(dataEscolhida.getTime());
+            }
+            editText.setText(dataString);
+            editText.setError(null);
+        });
+        dp.addOnNegativeButtonClickListener(v -> {
             editText.setText("");
             dataEscolhida = null;
         });
-        dpd.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
-        dpd.setDateRangeLimiter(new DatePickerRangeLimiter(minDate, maxDate, weekends));
+        dp.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
     }
 
     @Override
@@ -860,11 +889,6 @@ public class CustomTextInputLayout
 
     public void setImeOtions(int imeOtions) {
         editText.setImeOptions(imeOtions);
-    }
-
-    @Override
-    public void addOnEditTextAttachedListener(@NonNull OnEditTextAttachedListener listener) {
-        //super.addOnEditTextAttachedListener(listener);
     }
 
     @Override
@@ -965,82 +989,22 @@ public class CustomTextInputLayout
 
 }
 
-class DatePickerRangeLimiter
-        implements DateRangeLimiter {
+class WeekdayDateValidator implements CalendarConstraints.DateValidator {
 
-    private Calendar startDate;
-    private Calendar endDate;
-    private boolean weekends = true;
+    WeekdayDateValidator() {
 
-    public DatePickerRangeLimiter(Calendar startDate,
-                                  Calendar endDate,
-                                  boolean weekends) {
-        //por algum motivo bizarro, não está dando certo a startDate, então estou deduzindo 1 dia manualmente
-        //startDate.set(Calendar.DAY_OF_MONTH, startDate.get(Calendar.DAY_OF_MONTH) + 1);
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.weekends = weekends;
     }
 
-    public DatePickerRangeLimiter(Parcel in) {
+    WeekdayDateValidator(Parcel parcel) {
 
     }
 
     @Override
-    public int getMinYear() {
-        return 1900;
-    }
-
-    @Override
-    public int getMaxYear() {
-        return 2100;
-    }
-
-    @NonNull
-    @Override
-    public Calendar getStartDate() {
-        Calendar output = Calendar.getInstance();
-        output.set(Calendar.YEAR, 1900);
-        output.set(Calendar.DAY_OF_MONTH, 1);
-        output.set(Calendar.MONTH, Calendar.JANUARY);
-        return output;
-    }
-
-    @NonNull
-    @Override
-    public Calendar getEndDate() {
-        Calendar output = Calendar.getInstance();
-        output.set(Calendar.YEAR, 2100);
-        output.set(Calendar.DAY_OF_MONTH, 1);
-        output.set(Calendar.MONTH, Calendar.JANUARY);
-        return output;
-    }
-
-    @Override
-    public boolean isOutOfRange(int year, int month, int day) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, day);
-
-        if (startDate != null && deduzirDatasInt(startDate.getTime(), c.getTime()) < 0) {
-            return true;
-        } else if (endDate != null && deduzirDatasInt(c.getTime(), endDate.getTime()) < 0) {
-            return true;
-        } else {
-            if (weekends) {
-                return false;
-            } else {
-                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-                return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
-            }
-        }
-    }
-
-    @NonNull
-    @Override
-    public Calendar setToNearestDate(@NonNull Calendar day) {
-        return day;
+    public boolean isValid(long date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        return dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY;
     }
 
     @Override
@@ -1049,26 +1013,21 @@ class DatePickerRangeLimiter
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
 
     }
 
-    public static final Parcelable.Creator<DatePickerRangeLimiter> CREATOR
-            = new Parcelable.Creator<DatePickerRangeLimiter>() {
-        public DatePickerRangeLimiter createFromParcel(Parcel in) {
-            return new DatePickerRangeLimiter(in);
+    public static final Parcelable.Creator<WeekdayDateValidator> CREATOR = new Parcelable.Creator<WeekdayDateValidator>() {
+
+        @Override
+        public WeekdayDateValidator createFromParcel(Parcel parcel) {
+            return new WeekdayDateValidator(parcel);
         }
 
-        public DatePickerRangeLimiter[] newArray(int size) {
-            return new DatePickerRangeLimiter[size];
+        @Override
+        public WeekdayDateValidator[] newArray(int size) {
+            return new WeekdayDateValidator[size];
         }
     };
-
-    public static int deduzirDatasInt(Date initialDate, Date finalDate) {
-        if (initialDate == null || finalDate == null) {
-            return 0;
-        }
-        return (int) ((finalDate.getTime() - initialDate.getTime()) / (24 * 60 * 60 * 1000));
-    }
 
 }
