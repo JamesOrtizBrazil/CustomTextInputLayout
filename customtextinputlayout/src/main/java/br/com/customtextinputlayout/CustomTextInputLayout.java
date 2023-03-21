@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -332,6 +333,28 @@ public class CustomTextInputLayout
 
         if (lines > 0) {
             editText.setLines(lines);
+        }
+    }
+
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+
+        if (gainFocus) {
+            if (editText.isEnabled() && editText != null && editText.getText() != null) {
+                if (editText.getText().toString().length() > 0 && !disableClearButton) {
+                    setEndIconMode(END_ICON_CLEAR_TEXT);
+
+                    if (endIconDrawable == null && !disableClearButton) {
+                        setEndIconDrawable(R.drawable.ic_close);
+                    }
+
+                    //editText.requestFocus();
+                } else {
+                    setEndIconMode(END_ICON_NONE);
+                    //editText.requestFocus();
+                }
+            }
         }
     }
 
