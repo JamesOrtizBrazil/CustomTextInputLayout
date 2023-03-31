@@ -336,6 +336,7 @@ public class CustomTextInputLayout
         }
     }
 
+    /*
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
@@ -348,15 +349,12 @@ public class CustomTextInputLayout
                     if (endIconDrawable == null && !disableClearButton) {
                         setEndIconDrawable(R.drawable.ic_close);
                     }
-
-                    //editText.requestFocus();
                 } else {
                     setEndIconMode(END_ICON_NONE);
-                    //editText.requestFocus();
                 }
             }
         }
-    }
+    }*/
 
     private void addPhoneMask() {
         TextWatcher phoneWatcher = new TextWatcher() {
@@ -830,6 +828,7 @@ public class CustomTextInputLayout
         dp.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
     }
 
+    /*
     @Override
     public void setEnabled(boolean enabled) {
         if (editText != null) {
@@ -839,7 +838,7 @@ public class CustomTextInputLayout
                 setEndIconMode(END_ICON_NONE);
             }
         }
-    }
+    }*/
 
     public void setTextColor(int color) {
         editText.setTextColor(color);
@@ -914,11 +913,12 @@ public class CustomTextInputLayout
         editText.setImeOptions(imeOtions);
     }
 
+    /*
     @Override
     public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
         editText.requestFocus();
         return true;
-    }
+    }*/
 
     public static Calendar getCalendar(String date) {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_BR);
