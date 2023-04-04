@@ -800,6 +800,15 @@ public class CustomTextInputLayout
         dp.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (editText != null) {
+            editText.setEnabled(enabled);
+
+            setEndIconVisible(enabled);
+        }
+    }
+
     public void setTextColor(int color) {
         editText.setTextColor(color);
     }
