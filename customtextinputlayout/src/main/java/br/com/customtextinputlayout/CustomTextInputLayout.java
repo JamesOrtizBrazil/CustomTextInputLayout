@@ -172,38 +172,30 @@ public class CustomTextInputLayout
     }
 
     private void initConfig() {
+        setEndIconMode(END_ICON_CLEAR_TEXT);
+        setEndIconDrawable(R.drawable.ic_close);
+
         editText = new TextInputEditText(getContext());
         editText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        addView(editText);
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (mOnFocusChangeListener != null) {
+                mOnFocusChangeListener.onFocusChange(v, hasFocus);
             }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (editText.isEnabled()) {
-                    if (s.length() > 0 && !disableClearButton) {
-                        setEndIconMode(END_ICON_CLEAR_TEXT);
-
-                        if (endIconDrawable == null && !disableClearButton) {
-                            setEndIconDrawable(R.drawable.ic_close);
-                        }
-
-                        editText.requestFocus();
-                    } else {
-                        setEndIconMode(END_ICON_NONE);
-                        editText.requestFocus();
-                    }
+            if (hasFocus) {
+                if (editText.isEnabled() && editText != null && editText.getText() != null) {
+                    setEndIconVisible(editText.getText().toString().length() > 0 && !disableClearButton);
+                } else {
+                    setEndIconVisible(false);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            } else {
+                setEndIconVisible(false);
             }
         });
+
+        addView(editText);
 
         editText.setEnabled(enabled);
 
@@ -333,25 +325,6 @@ public class CustomTextInputLayout
 
         if (lines > 0) {
             editText.setLines(lines);
-        }
-    }
-
-    @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
-        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-
-        if (gainFocus) {
-            if (editText.isEnabled() && editText != null && editText.getText() != null) {
-                if (editText.getText().toString().length() > 0 && !disableClearButton) {
-                    setEndIconMode(END_ICON_CLEAR_TEXT);
-
-                    if (endIconDrawable == null && !disableClearButton) {
-                        setEndIconDrawable(R.drawable.ic_close);
-                    }
-                } else {
-                    setEndIconMode(END_ICON_NONE);
-                }
-            }
         }
     }
 
@@ -827,17 +800,6 @@ public class CustomTextInputLayout
         dp.show(((AppCompatActivity) context).getSupportFragmentManager(), "Datepickerdialog");
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        if (editText != null) {
-            editText.setEnabled(enabled);
-
-            if (!enabled) {
-                setEndIconMode(END_ICON_NONE);
-            }
-        }
-    }
-
     public void setTextColor(int color) {
         editText.setTextColor(color);
     }
@@ -903,8 +865,22 @@ public class CustomTextInputLayout
         editText.setOnEditorActionListener(listener);
     }
 
-    public void myOnFocusChangeListener(View.OnFocusChangeListener listener) {
-        editText.setOnFocusChangeListener(listener);
+    public void setmOnFocusChangeListener(OnFocusChangeListener mOnFocusChangeListener) {
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (mOnFocusChangeListener != null) {
+                mOnFocusChangeListener.onFocusChange(v, hasFocus);
+            }
+
+            if (hasFocus) {
+                if (editText.isEnabled() && editText != null && editText.getText() != null) {
+                    setEndIconVisible(editText.getText().toString().length() > 0 && !disableClearButton);
+                } else {
+                    setEndIconVisible(false);
+                }
+            } else {
+                setEndIconVisible(false);
+            }
+        });
     }
 
     public void setImeOtions(int imeOtions) {
