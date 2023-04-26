@@ -515,14 +515,6 @@ public class CustomTextInputLayout
         setInitialBrazilMonetary();
     }
 
-    public void disableSoftInputFromAppearing() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // API 21
-            editText.setShowSoftInputOnFocus(false);
-        } else { // API 11-20
-            editText.setTextIsSelectable(true);
-        }
-    }
-
     public void setCustomMask(final String mask) {
         //verificando se já existia uma máscara anterior, remove ela
         if (maskWatcher != null) {
