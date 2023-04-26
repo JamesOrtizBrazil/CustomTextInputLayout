@@ -515,6 +515,11 @@ public class CustomTextInputLayout
         setInitialBrazilMonetary();
     }
 
+    public void disableSoftInputFromAppearing() {
+        editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setTextIsSelectable(true);
+    }
+
     public void setCustomMask(final String mask) {
         //verificando se já existia uma máscara anterior, remove ela
         if (maskWatcher != null) {
