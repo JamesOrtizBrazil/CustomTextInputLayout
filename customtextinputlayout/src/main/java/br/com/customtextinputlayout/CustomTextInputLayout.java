@@ -516,8 +516,11 @@ public class CustomTextInputLayout
     }
 
     public void disableSoftInputFromAppearing() {
-        editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        editText.setTextIsSelectable(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // API 21
+            editText.setShowSoftInputOnFocus(false);
+        } else { // API 11-20
+            editText.setTextIsSelectable(true);
+        }
     }
 
     public void setCustomMask(final String mask) {
